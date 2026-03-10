@@ -1,0 +1,61 @@
+---
+title: "B2B Loyalty Platform"
+slug: "b2b-loyalty-platform"
+tagline: "SaaS rewards engine for businesses"
+category: "SaaS Platform"
+tech: ["Vue.js", "Node.js", "Express", "MongoDB", "Vuex"]
+color: "#7A8194"
+---
+
+## Overview
+
+A white-label B2B loyalty SaaS platform allowing businesses to launch custom rewards programs for their customers. Features a configurable points engine, redemption workflows, multi-role admin panels, and real-time analytics.
+
+## Multi-Role Architecture
+
+The platform has three access tiers:
+
+- **SuperAdmin** — full platform oversight, billing, feature flags
+- **Business Admin** — configure program rules, manage catalog, view analytics
+- **End User** — earn points, browse rewards, redeem
+
+Each role gets a dedicated Vue.js SPA with scoped API access enforced server-side via JWT role claims.
+
+## Points Engine Design
+
+The points engine is rule-based and configurable by Business Admins:
+
+```ts
+interface EarningRule {
+  trigger: "purchase" | "referral" | "signup" | "review";
+  pointsPerUnit: number;
+  multiplier?: number;
+  expiresInDays?: number;
+  maxPerPeriod?: { amount: number; period: "day" | "week" | "month" };
+}
+```
+
+This makes the platform white-label — different businesses can operate completely different reward economics without code changes.
+
+## Redemption Workflow
+
+1. User browses reward catalog (points price visible)
+2. Selects reward → system checks balance atomically
+3. Points deducted via MongoDB transaction
+4. Reward fulfillment triggered (voucher code, webhook, or physical dispatch)
+5. Audit trail created for compliance
+
+## Analytics Dashboard
+
+Real-time metrics tracked per business:
+
+- Points issued vs. redeemed (breakage rate)
+- Top performing earning triggers
+- User engagement cohorts
+- Reward catalog performance
+
+## Results
+
+- Multiple B2B clients running live loyalty programs
+- Configurable without developer intervention after setup
+- <50ms points balance checks via indexed MongoDB queries

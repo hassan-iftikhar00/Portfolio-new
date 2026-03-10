@@ -1,0 +1,55 @@
+---
+title: "E-Voting Platform SaaS"
+slug: "e-voting-platform"
+tagline: "Multi-tenant voting system with JWT-secured verification"
+category: "SaaS Platform"
+tech: ["MERN", "TypeScript", "JWT", "TailwindCSS"]
+color: "#A3AAB8"
+---
+
+## Overview
+
+A multi-tenant digital voting system designed for educational institutions. Built with a security-first architecture using JWT token chaining, OTP-based voter verification, and tamper-resistant election data isolation.
+
+## Problem
+
+Educational institutions were running elections using paper ballots or basic Google Forms, creating inefficiencies, fraud risks, and no analytics.
+
+## Solution Architecture
+
+The system uses a multi-tenancy model where each institution gets an isolated election namespace. Votes are hashed and stored with audit trails, making result manipulation computationally infeasible.
+
+```
+Institution A (Tenant)          Institution B (Tenant)
+     |                                |
+     └── Elections                    └── Elections
+          ├── Voter Registry               ├── Voter Registry
+          ├── Ballot Engine                ├── Ballot Engine
+          └── Results Stream               └── Results Stream
+```
+
+## Key Technical Decisions
+
+### 1. JWT + OTP Two-Factor Voter Verification
+
+Each voter receives a time-limited JWT after OTP verification. This token is single-use and scoped to one election, preventing duplicate voting at the cryptographic level.
+
+### 2. Real-Time Results with Server-Sent Events
+
+Results update live using SSE (Server-Sent Events) rather than WebSockets — a lighter-weight solution suitable for the read-heavy nature of election result streaming.
+
+### 3. Role-Based Access Control (RBAC)
+
+Three roles: **Admin**, **Voter**, **Observer**. Each has a scoped JWT with an embedded role claim validated on every API call.
+
+## Challenges
+
+**Vote integrity under concurrent load:** Multiple voters submitting simultaneously could cause race conditions in vote tallies. Solved with MongoDB transactions and atomic increment operations.
+
+**Voter anonymity vs. audit trail:** Needed to prove a specific voter participated without revealing who they voted for. Solved with a two-table design: one table maps voter identity to participation status, another stores anonymized votes.
+
+## Results
+
+- Zero security incidents across multiple election cycles
+- Real-time dashboards handling 500+ concurrent voters
+- Full audit log retained for compliance

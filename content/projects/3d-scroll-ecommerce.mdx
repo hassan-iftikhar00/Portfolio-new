@@ -1,0 +1,68 @@
+---
+title: "3D Scroll Ecommerce Website"
+slug: "3d-scroll-ecommerce"
+tagline: "Scroll-driven 3D product showcase with GSAP and Three.js"
+category: "Creative / 3D"
+tech: ["Next.js 14", "Three.js", "React Three Fiber", "GSAP", "TailwindCSS"]
+color: "#9BA3B2"
+---
+
+## Overview
+
+Scroll-driven 3D ecommerce product showcase. Products rotate, zoom, and reveal as the user scrolls, driven by GSAP ScrollTrigger timelines synchronized with React Three Fiber scenes.
+
+## Technical Architecture
+
+### GSAP ScrollTrigger Timelines
+
+The core animation engine uses GSAP ScrollTrigger to pin sections and create scrub-synchronized animations:
+
+```ts
+gsap
+  .timeline({
+    scrollTrigger: {
+      trigger: "#product-section",
+      start: "top top",
+      end: "+=200%",
+      scrub: 1.5,
+      pin: true,
+    },
+  })
+  .to(camera.position, { z: 2.5, duration: 1 })
+  .to(productMesh.rotation, { y: Math.PI * 2, duration: 2 }, "-=0.5")
+  .to("#product-info", { opacity: 1, y: 0, duration: 0.5 });
+```
+
+### React Three Fiber Scene Structure
+
+```
+<Canvas>
+  <ambientLight />
+  <directionalLight />
+  <Suspense fallback={<Loader />}>
+    <ProductModel />       ← GLTF/GLB with Draco compression
+    <Environment />        ← HDR environment map
+    <ScrollControls />     ← Drei scroll rig
+  </Suspense>
+</Canvas>
+```
+
+### Performance Optimizations
+
+- GLTF models compressed with Draco (70-85% size reduction)
+- Texture atlasing to reduce draw calls
+- `useFrame` throttling — 3D updates only when visible
+- Next.js `dynamic()` with `ssr: false` for the Canvas component
+- `<Suspense>` with skeleton fallback for initial load
+
+## Key Challenges
+
+**60fps on mid-range devices:** Full 3D with GSAP scroll sync is expensive. Solved by reducing polygon count, baking ambient occlusion into textures, and using `pixelRatio: Math.min(window.devicePixelRatio, 1.5)`.
+
+**SSR compatibility:** Three.js requires `window` — handled with `next/dynamic` and `ssr: false` wrapping all Canvas components.
+
+## Results
+
+- Smooth 60fps scroll experience on desktop
+- Mobile-degraded experience (2D fallback) for performance
+- Scroll-triggered product reveals with timing-synced animations

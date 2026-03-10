@@ -1,0 +1,56 @@
+---
+title: "LiveAutos"
+slug: "liveautos"
+tagline: "UK car marketplace platform"
+category: "Marketplace"
+tech: ["MERN", "REST APIs", "Cloudinary"]
+color: "#B4BAC6"
+---
+
+## Overview
+
+UK-based car marketplace for dealers and private sellers to list vehicles with spec data from the DVLA API, and for buyers to search with multi-filter queries.
+
+## Multi-Step Listing Wizard
+
+The listing process uses a 7-step wizard flow:
+
+1. **VIN/Reg lookup** → Auto-populates make, model, year from DVLA API
+2. **Condition & mileage** → Structured inputs with validation
+3. **Feature checklist** → Service history, warranties, modifications
+4. **Photo upload** → Multi-image with Cloudinary CDN processing
+5. **Pricing** → Market comparison tool
+6. **Contact preferences** → Phone/email visibility settings
+7. **Preview & publish**
+
+## Search Architecture
+
+Advanced filtering uses MongoDB aggregation pipelines with compound indexes:
+
+```ts
+const pipeline = [
+  { $match: buildMatchStage(filters) },
+  { $sort: { [sortField]: sortDir } },
+  {
+    $facet: {
+      results: [{ $skip: offset }, { $limit: pageSize }],
+      total: [{ $count: "count" }],
+      priceRange: [
+        {
+          $group: {
+            _id: null,
+            min: { $min: "$price" },
+            max: { $max: "$price" },
+          },
+        },
+      ],
+    },
+  },
+];
+```
+
+## Results
+
+- Sub-100ms search response times with proper indexing
+- Dealers listing 50+ cars using bulk upload tool
+- Mobile-first responsive design for on-the-go browsing
