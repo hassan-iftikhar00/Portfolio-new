@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Hassan Iftikhar", url: "https://hassaniftikhar.dev" }],
   creator: "Hassan Iftikhar",
+  icons: {
+    icon: "/Copilot_20260310_201847.png",
+    apple: "/Copilot_20260310_201847.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -24,12 +28,16 @@ export const metadata: Metadata = {
     description:
       "Full stack developer. SaaS platforms, admin systems, and web applications.",
     siteName: "Hassan Iftikhar",
+    images: [
+      { url: "/Copilot_20260310_201847.png", width: 1024, height: 1024 },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Hassan Iftikhar - Full Stack Developer",
     description:
       "Full stack developer. SaaS platforms, admin systems, and web applications.",
+    images: ["/Copilot_20260310_201847.png"],
   },
   robots: {
     index: true,

@@ -59,10 +59,10 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-1 items-center md:items-start">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-accent-cyan/10 border border-accent-cyan/30 flex items-center justify-center group-hover:bg-accent-cyan/20 transition-colors duration-200 overflow-hidden">
+              <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
                 <Image
-                  src="/images/MuhammadHassan.png"
-                  alt="Hassan Iftikhar"
+                  src="/Copilot_20260310_201847.png"
+                  alt="Hassan Iftikhar logo"
                   width={32}
                   height={32}
                   className="w-full h-full object-cover"
