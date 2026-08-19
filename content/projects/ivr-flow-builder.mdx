@@ -1,0 +1,164 @@
+---
+title: "IVR Flow Builder"
+slug: "ivr-flow-builder"
+tagline: "Drag-and-drop node editor replacing a legacy call routing system"
+category: "Engineering Tool"
+tech: ["React", "Next.js", "TypeScript", "TailwindCSS"]
+color: "#C8CDD6"
+---
+
+## Overview
+
+Production-grade, node-based IVR (Interactive Voice Response) flow builder built at Ascend BPO Services to replace a legacy system that operators found unusable. The tool lets call-centre teams visually design call-routing trees using a drag-and-drop canvas.
+
+The project combines graph data structures, real-time state management, a rules engine, and a live analytics dashboard.
+
+## The Problem With the Legacy System
+
+The old IVR editor was a flat form with numbered steps and no visualisation. Operators building multi-branch flows (e.g. "Press 1 for billing, Press 2 for support, after 5 seconds of silence route to overflow") had to mentally track node connections across dozens of rows. Errors were only discovered at runtime, during live calls.
+
+Key pain points:
+
+- No visual representation of the call graph
+- No way to preview a flow before deploying
+- Conditional branches were text-only — easy to misconfigure
+- Zero analytics on where callers dropped off
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    IVR Flow Builder                     │
+│                                                         │
+│  ┌──────────────┐    ┌─────────────────────────────┐   │
+│  │  Node Canvas │    │   Properties Panel           │   │
+│  │  (React DnD) │◄──►│   (selected node config)     │   │
+│  └──────┬───────┘    └─────────────────────────────┘   │
+│         │                                               │
+│  ┌──────▼───────┐    ┌─────────────────────────────┐   │
+│  │  Flow Store  │    │   Preview Engine             │   │
+│  │  (useReducer)│◄──►│   (simulates call paths)     │   │
+│  └──────┬───────┘    └─────────────────────────────┘   │
+│         │                                               │
+│  ┌──────▼───────────────────────────────────────────┐  │
+│  │              Routing Rules Engine                 │  │
+│  │  DTMF triggers · Time-based · NLP · Fallback      │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Key Technical Decisions
+
+### 1. Graph State with `useReducer`
+
+The flow graph is a directed acyclic graph (DAG) in state. Nodes have IDs, types, and an edges array. I chose `useReducer` over a library like Zustand for this because the reducer pattern maps cleanly to graph operations:
+
+```ts
+type FlowAction =
+  | { type: "ADD_NODE"; node: IVRNode }
+  | { type: "CONNECT"; fromId: string; toId: string; condition?: Condition }
+  | { type: "DELETE_NODE"; id: string }
+  | { type: "UPDATE_NODE"; id: string; patch: Partial<IVRNode> };
+
+function flowReducer(state: FlowState, action: FlowAction): FlowState {
+  switch (action.type) {
+    case "ADD_NODE":
+      return { ...state, nodes: [...state.nodes, action.node] };
+    case "CONNECT":
+      return {
+        ...state,
+        edges: [
+          ...state.edges,
+          { from: action.fromId, to: action.toId, condition: action.condition },
+        ],
+      };
+    case "DELETE_NODE":
+      // Also remove all edges referencing this node
+      return {
+        ...state,
+        nodes: state.nodes.filter((n) => n.id !== action.id),
+        edges: state.edges.filter(
+          (e) => e.from !== action.id && e.to !== action.id,
+        ),
+      };
+    // ...
+  }
+}
+```
+
+### 2. Conditional Routing Logic Engine
+
+The rules engine evaluates conditions at each node during the preview simulation:
+
+```ts
+type Condition =
+  | {
+      type: "dtmf";
+      key:
+        | "1"
+        | "2"
+        | "3"
+        | "4"
+        | "5"
+        | "6"
+        | "7"
+        | "8"
+        | "9"
+        | "0"
+        | "#"
+        | "*";
+    }
+  | { type: "time"; from: string; to: string; timezone: string }
+  | { type: "silence"; afterMs: number }
+  | { type: "nlp"; intent: string; confidence: number }
+  | { type: "default" }; // fallback route
+
+function evaluateCondition(
+  condition: Condition,
+  context: CallContext,
+): boolean {
+  switch (condition.type) {
+    case "dtmf":
+      return context.dtmf === condition.key;
+    case "time":
+      return isInTimeWindow(condition.from, condition.to, condition.timezone);
+    case "silence":
+      return context.silenceDuration >= condition.afterMs;
+    case "nlp":
+      return (
+        context.intent === condition.intent &&
+        context.confidence >= condition.confidence
+      );
+    case "default":
+      return true;
+  }
+}
+```
+
+### 3. Real-Time Preview Without Saving
+
+Operators can click "Preview" and step through the call flow interactively — pressing digit keys to simulate DTMF input. The preview engine walks the graph in memory, highlighting the active node on the canvas and showing which branch was taken and why.
+
+This reduced misconfiguration: operators could catch broken branches before a single live call was routed incorrectly.
+
+### 4. IVR Analytics Dashboard
+
+Every call that ran through a deployed flow logged events: `node_entered`, `condition_matched`, `call_ended`. These fed a real-time dashboard showing:
+
+- Drop-off rates per node (where callers hung up)
+- Branch distribution (which DTMF key was pressed most)
+- Average call duration by entry path
+- No-input (silence) rate per node — indicating confusing prompts
+
+## Challenges
+
+**Cycle detection:** A misconfigured node editor could create circular references (Node A → Node B → Node A), creating an infinite loop in the preview engine. Implemented DFS cycle detection running on every edge creation, rejecting the connection if a cycle was detected.
+
+**Canvas performance with many nodes:** Flows with 30+ nodes caused noticeable render lag when any state changed (because all node positions recomputed). Fixed with `React.memo` on node components keyed by ID, and separating edge renders from node renders so that moving a node only re-renders its own component and its connected edges — not the entire canvas.
+
+## Impact
+
+- Replaced a system that took operators 40+ minutes to build a 10-node flow
+- New system: same flow in under 5 minutes
+- Zero misconfigured deployments in the months after launch (vs. weekly incidents before)
+- Analytics dashboard surfaced a 23% drop-off rate at one specific node — prompt was rewritten, drop-off fell to 8%

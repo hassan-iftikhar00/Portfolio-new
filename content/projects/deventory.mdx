@@ -1,0 +1,78 @@
+---
+title: "Deventory"
+slug: "deventory"
+tagline: "Production landing site for a dev inventory management tool"
+category: "Production Landing Site"
+tech:
+  [
+    "Next.js 15",
+    "React 19",
+    "TypeScript",
+    "TailwindCSS",
+    "GSAP",
+    "Resend",
+    "Vercel",
+  ]
+color: "#A3AAB8"
+---
+
+## Overview
+
+Multi-page marketing and product site for Deventory, a developer inventory management tool. Built with Next.js 15 and React 19, deployed on Vercel. The site includes GSAP-animated sections, a Resend-powered contact form, Swiper.js testimonials, and full SEO with auto-generated sitemap.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    Deventory Site                     │
+│                                                       │
+│  ┌──────────────┐    ┌────────────────────────────┐  │
+│  │  GSAP Hero   │    │   Multi-page Layout         │  │
+│  │  Animations  │    │   (shared nav/footer)       │  │
+│  └──────────────┘    └────────────────────────────┘  │
+│                                                       │
+│  ┌──────────────┐    ┌────────────────────────────┐  │
+│  │  Swiper.js   │    │   Headless UI              │  │
+│  │  Carousel    │    │   FAQ Accordion            │  │
+│  └──────────────┘    └────────────────────────────┘  │
+│                                                       │
+│  ┌──────────────────────────────────────────────────┐│
+│  │              Resend Contact Form                  ││
+│  │  Client validation → Server action → Resend API   ││
+│  └──────────────────────────────────────────────────┘│
+│                                                       │
+│  ┌──────────────────────────────────────────────────┐│
+│  │  Vercel Analytics · Sitemap · SEO Meta Tags       ││
+│  └──────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────┘
+```
+
+## Key Technical Decisions
+
+### 1. GSAP Scroll Animations
+
+Hero section uses GSAP timeline with ScrollTrigger for entrance animations — text reveals, parallax movement, and staggered element appearances tied to scroll position.
+
+### 2. Resend API for Contact Form
+
+The contact form uses a Next.js server action to validate input and forward to the Resend API. No third-party form service — direct API integration with server-side validation before dispatch.
+
+### 3. Swiper.js Testimonials
+
+Testimonials carousel built with Swiper.js for touch/swipe support, autoplay, and responsive breakpoints. Handles variable card heights with `autoHeight` mode.
+
+### 4. Headless UI FAQ
+
+FAQ section uses Headless UI's `Disclosure` component for accessible accordion behavior — keyboard navigation, proper ARIA attributes, and smooth open/close transitions without custom JS.
+
+### 5. SEO & Analytics
+
+- Auto-generated `sitemap.xml` via Next.js App Router metadata API
+- OpenGraph and Twitter meta tags per page
+- Vercel Analytics for page views, Web Vitals, and user flow tracking
+
+## Results
+
+- Live at [deventory.site](https://deventory.site)
+- Sub-second LCP with Next.js 15 static generation
+- Fully responsive across mobile, tablet, and desktop

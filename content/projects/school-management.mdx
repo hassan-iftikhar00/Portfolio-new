@@ -1,0 +1,63 @@
+---
+title: "School Management System"
+slug: "school-management"
+tagline: "End-to-end school operations platform"
+category: "EdTech"
+tech: ["Next.js", "Node.js", "MongoDB", "JWT", "TailwindCSS", "Hubtel API"]
+color: "#8B929E"
+---
+
+## Overview
+
+School registration and management platform handling student enrollment, academic records, fee payments, and automated SMS notifications via the Hubtel API.
+
+## System Architecture
+
+```
+Client (Next.js)
+    │
+    ├── Student Portal    → View grades, attendance, schedule
+    ├── Parent Portal     → Fee payments, notifications
+    └── Admin Panel       → Manage everything
+
+API Layer (Node.js / Express)
+    │
+    ├── Auth Service      → JWT-based sessions
+    ├── Student Service   → CRUD, grade management
+    ├── Payment Service   → Fee processing + Hubtel
+    └── Notification Svc  → SMS via Hubtel API
+
+Database (MongoDB)
+    ├── students
+    ├── grades
+    ├── payment_records
+    └── notifications
+```
+
+## Hubtel SMS Integration
+
+Used the Hubtel API for real-time SMS notifications — triggered on fee payment confirmations, attendance alerts, and result releases:
+
+```ts
+const sendSMS = async (to: string, message: string) => {
+  const res = await fetch("https://api.hubtel.com/v1/messages/send", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${btoa(`${HUBTEL_CLIENT_ID}:${HUBTEL_SECRET}`)}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from: "School", to, content: message }),
+  });
+  return res.json();
+};
+```
+
+## Key Feature: Bulk Enrollment
+
+The admin panel supports CSV bulk enrollment — an admin uploads a spreadsheet, the system validates, de-duplicates, and creates student records with auto-generated portal credentials sent via SMS.
+
+## Results
+
+- Reduced administrative workload by ~60% compared to manual processes
+- Instant SMS delivery via Hubtel with 99% delivery rate
+- Handles 1,000+ active students in production
