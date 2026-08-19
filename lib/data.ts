@@ -23,6 +23,9 @@ export type Experience = {
   summary: string;
   achievements: string[];
   tech: string[];
+  /** Optional company logo path (public/images/logos/*). Rendered grayscale.
+   *  Leave undefined until a real logo file is supplied. */
+  logo?: string;
 };
 
 /** Skills grouped by layer, each group tied to the case studies that prove it. */
@@ -33,15 +36,27 @@ export type SkillGroup = {
   provenBy: string[];
 };
 
+export type Testimonial = {
+  /** Verbatim client review text. Reproduced exactly, including the client's
+      own spelling/casing — never cleaned up. */
+  quote: string;
+  /** Fiverr username (public reviewer handle). No invented full names. */
+  username: string;
+  country: string;
+  source: string;
+};
+
 export type CaseStudy = {
   slug: string;
   title: string;
   category: string;
-  status: "live" | "archived";
+  status: "live" | "archived" | "demo";
   /** The real problem, 1–2 sentences. No filler. */
   problem: string;
   role: string;
   timeframe: string;
+  /** Client / origin country for the project (colored flag + label). */
+  country?: { code: string; name: string };
   stack: string[];
   liveUrl?: string;
   repoUrl?: string;
@@ -55,8 +70,9 @@ export type CaseStudy = {
   decisions: { chose: string; rejected: string; why: string }[];
   /** The interactive proof. Poster is the JS-off fallback + facade click-to-load image. */
   artifact: {
-    kind: "widget" | "embed" | "facade" | "recording";
-    poster: string;
+    kind: "widget" | "embed" | "facade" | "recording" | "diagram";
+    /** Screenshot fallback. Optional: diagram-only studies (no screenshots) omit it. */
+    poster?: string;
     /** Lazy client island, when kind is widget/embed. */
     component?: string;
     /** Live deployment, for facade/embed. */
@@ -64,6 +80,34 @@ export type CaseStudy = {
   };
   /** Real numbers only. Omit the field entirely if unknown. */
   metrics?: { value: string; label: string }[];
+  /** 2–3 real screenshots for the case-study gallery. Omitted for diagram-only
+   *  studies (Ascend has no screenshots). */
+  gallery?: string[];
+};
+
+/** Below-the-featured-set ledger. One line each: no thumbnails, diagrams, or
+ *  decision blocks. For work that doesn't fit the case-study format (joined an
+ *  existing product, or a smaller scoped engagement). */
+export type ProjectIndexEntry = {
+  name: string;
+  /** One sentence, factual. */
+  summary: string;
+  stack: string[];
+  year: string;
+  role: string;
+  /** Free label: "Live", "Delivered", etc. Not the live/archived/demo union. */
+  status: string;
+  country?: { code: string; name: string };
+  link?: string;
+};
+
+/** A country reached through client work (for the static reach map + list).
+ *  Honestly labelled: work delivered to, not offices or residence. */
+export type ReachCountry = {
+  code: string;
+  name: string;
+  /** What sourced it, shown as a small note. */
+  note: string;
 };
 
 // ─── Owner ───────────────────────────────────────────────────────────────────
@@ -109,6 +153,7 @@ export const experiences: Experience[] = [
       "C# ASP.NET Core",
       "SQL Server",
     ],
+    logo: "/images/companyLogos/Ascend.png",
   },
   {
     company: "Global Expeditions SMC, London",
@@ -121,6 +166,7 @@ export const experiences: Experience[] = [
       "Coordinated cross-functional teams across the full lifecycle, delivering a production system on schedule.",
     ],
     tech: ["Vue.js", "Node.js", "Express.js", "MongoDB", "Vuex", "Ant Design", "SASS"],
+    logo: "/images/companyLogos/Global.jpeg",
   },
 ];
 
@@ -134,13 +180,15 @@ export const caseStudies: CaseStudy[] = [
     slug: "codecanvas",
     title: "CodeCanvas",
     category: "AI · Sketch-to-Code",
-    status: "archived",
+    // Live final-year project, hosted at liveUrl (may later become a product).
+    status: "live",
     problem:
       "Turning a hand-drawn UI wireframe into working front-end code is slow and manual. CodeCanvas converts a sketch into production-ready React + Tailwind through a detection-to-generation pipeline.",
     role: "Team Lead · Final Year Project",
-    timeframe: "FYP",
+    timeframe: "2026",
+    country: { code: "pk", name: "Pakistan" },
     stack: [
-      "Next.js 16",
+      "Next.js 14",
       "TypeScript",
       "Konva.js",
       "FastAPI",
@@ -165,6 +213,11 @@ export const caseStudies: CaseStudy[] = [
         why: "Detection produces deterministic element types and coordinates, so the model synthesizes from a structured layout instead of guessing pixels. The detector can be retrained independently of the generator, and a bad box is debuggable in a way a hallucinated layout is not.",
       },
     ],
+    gallery: [
+      "/images/projects/gallery/codecanvas-1.png",
+      "/images/projects/gallery/codecanvas-2.png",
+      "/images/projects/gallery/codecanvas-3.png",
+    ],
     artifact: {
       kind: "widget",
       poster: "/images/projects/codecanvas-poster.png",
@@ -180,6 +233,7 @@ export const caseStudies: CaseStudy[] = [
       "Collecting pixel-accurate website feedback usually means messy screenshots and email threads. FeedSnap is a multi-tenant Marker.io competitor: an embed widget pins screenshot-annotated comments at exact coordinates for owners to triage in a dashboard.",
     role: "Solo Developer",
     timeframe: "2025",
+    country: { code: "pk", name: "Pakistan" },
     stack: [
       "Next.js 16",
       "React 19",
@@ -216,6 +270,11 @@ export const caseStudies: CaseStudy[] = [
     // Recorded walkthrough: live domain expired, so the proof is a screen
     // recording of the real widget, poster-gated so it never touches LCP.
     // Media asset (recording + poster) still to be supplied.
+    gallery: [
+      "/images/projects/gallery/feedsnap-1.png",
+      "/images/projects/gallery/feedsnap-2.png",
+      "/images/projects/gallery/feedsnap-3.png",
+    ],
     artifact: {
       kind: "recording",
       poster: "/images/projects/feedsnap-poster.png",
@@ -223,46 +282,54 @@ export const caseStudies: CaseStudy[] = [
     },
   },
   {
-    slug: "peki-student-portal",
-    title: "Peki Senior High School Portal",
-    category: "EdTech · Enrolment Platform",
-    status: "live",
+    slug: "ascend-bpo-ivr",
+    title: "IVR Flow Builder + Analytics",
+    category: "Enterprise · Realtime Systems",
+    status: "demo",
     problem:
-      "A senior high school needed to run student enrolment, payments, and credential delivery online. The portal is a live full-stack platform with dual student and admin roles.",
-    role: "Solo Developer",
-    timeframe: "2025",
+      "Ascend BPO's call routing ran on a rigid legacy system. This project builds a drag-and-drop IVR flow builder and a real-time analytics portal to replace it: visual call-flow editing on a node canvas, plus live KPI monitoring pushed over SignalR.",
+    role: "Team Lead · Full Stack (Intern)",
+    timeframe: "2025 – 2026",
+    country: { code: "pk", name: "Pakistan" },
     stack: [
-      "Next.js 15",
-      "TypeScript",
-      "MongoDB",
-      "JWT",
-      "Hubtel API",
-      "SMS API",
-      "Cloudinary",
-      "pdf-lib",
-      "TailwindCSS",
+      "React 19",
+      "Vite",
+      "ReactFlow",
+      "MUI",
+      "Recharts",
+      "Zustand",
+      "TanStack Query",
+      "SignalR",
+      "C# ASP.NET Core",
+      "SQL Server",
     ],
-    liveUrl: "https://x2j8-platform-temporary-peki-139392952244.vercel.app/",
     architecture: {
-      component: "PekiArchitecture",
+      component: "AscendArchitecture",
       caption:
-        "Dual student/admin portals over 13 MongoDB models, Hubtel payments, SMS credential delivery, Cloudinary storage, and pdf-lib form generation.",
+        "ReactFlow node canvas → conditional routing engine → C# ASP.NET Core API on SQL Server, with a SignalR push stream driving a virtualized MUI DataGrid analytics portal.",
     },
     decisions: [
       {
         chose:
-          "A deliberately conventional Next.js 15 + MongoDB/Mongoose stack with a clean, beginner-friendly structure.",
+          "SignalR WebSocket push for the analytics portal, with the KPI grid virtualized (MUI DataGrid) to hold 100k rows inside the DOM budget.",
         rejected:
-          "Over-engineering it: complex frameworks, a heavy separate backend, or premature optimization.",
-        why: "The portal is run by school staff and will be maintained by future contributors, not a standing engineering team. Keeping the structure approachable made the admission workflow faster to iterate and simpler to hand off. The tradeoff is that some advanced features were deferred, but for this audience maintainability mattered more than early feature breadth.",
+          "Interval polling for updates, and rendering the full result set into the DOM.",
+        why: "Call-center KPIs change second to second, so polling either lags behind or hammers the server; a pushed stream keeps every open dashboard live off one connection. At 100k rows, mounting the whole grid would jank the main thread, so virtualization renders only the visible window. Offline resilience was layered on top so a dropped socket degrades to cached data instead of a blank board.",
       },
     ],
+    gallery: [
+      "/images/projects/gallery/ascend-1.png",
+      "/images/projects/gallery/ascend-2.png",
+      "/images/projects/gallery/ascend-3.png",
+    ],
     artifact: {
-      kind: "facade",
-      poster: "/images/projects/peki-poster.jpg",
-      href: "https://x2j8-platform-temporary-peki-139392952244.vercel.app/",
+      kind: "diagram",
+      // Real screenshots of the demo build now on disk, so the Work row shows a
+      // product tile instead of the "System diagram" fallback. Still kind:"diagram"
+      // (not deployed): the architecture diagram stays the technical proof and the
+      // case page skips the "Try it" section; screenshots are the gallery + poster.
+      poster: "/images/projects/ascend-poster.png",
     },
-    metrics: [{ value: "13", label: "MongoDB models" }],
   },
   {
     slug: "e-voting-platform",
@@ -273,6 +340,7 @@ export const caseStudies: CaseStudy[] = [
       "Institutions running elections by hand face slow counts and disputed results. This white-label SaaS automates the full election lifecycle with cryptographic vote receipts and real-time dashboards.",
     role: "Solo Developer",
     timeframe: "2024",
+    country: { code: "gh", name: "Ghana" },
     stack: [
       "React 18",
       "TypeScript",
@@ -306,12 +374,106 @@ export const caseStudies: CaseStudy[] = [
         why: "Isolation means a change or bug in one election cannot bleed into another, and a mis-scoped query cannot silently count the wrong election's ballots. It also lets past elections be preserved intact for audit. The cost is more moving parts and deliberate migration when data must move between elections, which is the safer default for anything holding vote results.",
       },
     ],
+    gallery: [
+      "/images/projects/gallery/evoting-1.jpg",
+      "/images/projects/gallery/evoting-2.jpg",
+      "/images/projects/gallery/evoting-3.jpg",
+    ],
     artifact: {
       kind: "facade",
       poster: "/images/projects/evoting-poster.jpg",
       href: "https://e-voting-pekiseniorhighschool.vercel.app/",
     },
   },
+  {
+    slug: "peki-student-portal",
+    title: "Peki Senior High School Portal",
+    category: "EdTech · Enrolment Platform",
+    status: "live",
+    problem:
+      "A senior high school needed to run student enrolment, payments, and credential delivery online. The portal is a live full-stack platform with dual student and admin roles.",
+    role: "Solo Developer",
+    timeframe: "2025",
+    country: { code: "gh", name: "Ghana" },
+    stack: [
+      "Next.js 15",
+      "TypeScript",
+      "MongoDB",
+      "JWT",
+      "Hubtel API",
+      "SMS API",
+      "Cloudinary",
+      "pdf-lib",
+      "TailwindCSS",
+    ],
+    liveUrl: "https://x2j8-platform-temporary-peki-139392952244.vercel.app/",
+    architecture: {
+      component: "PekiArchitecture",
+      caption:
+        "Dual student/admin portals over 13 MongoDB models, Hubtel payments, SMS credential delivery, Cloudinary storage, and pdf-lib form generation.",
+    },
+    decisions: [
+      {
+        chose:
+          "A deliberately conventional Next.js 15 + MongoDB/Mongoose stack with a clean, beginner-friendly structure.",
+        rejected:
+          "Over-engineering it: complex frameworks, a heavy separate backend, or premature optimization.",
+        why: "The portal is run by school staff and will be maintained by future contributors, not a standing engineering team. Keeping the structure approachable made the admission workflow faster to iterate and simpler to hand off. The tradeoff is that some advanced features were deferred, but for this audience maintainability mattered more than early feature breadth.",
+      },
+    ],
+    gallery: [
+      "/images/projects/gallery/peki-1.jpg",
+      "/images/projects/gallery/peki-2.jpg",
+      "/images/projects/gallery/peki-3.jpg",
+    ],
+    artifact: {
+      kind: "facade",
+      poster: "/images/projects/peki-poster.jpg",
+      href: "https://x2j8-platform-temporary-peki-139392952244.vercel.app/",
+    },
+    metrics: [{ value: "13", label: "MongoDB models" }],
+  },
+];
+
+// ─── Project index (below the featured five) ──────────────────────────────────
+// Everything that isn't a full case study. LiveAutos first: joined an existing
+// UK platform, so there is no architecture or founding decision of his to show —
+// the case-study format doesn't fit, so it's stated precisely as a ledger line.
+
+export const projectIndex: ProjectIndexEntry[] = [
+  {
+    name: "LiveAutos",
+    summary:
+      "Joined an existing UK car-listing platform to optimize search, build the multi-step listing flow, integrate UK vehicle-data APIs, and ship detail pages, advanced filtering, and legal pages.",
+    stack: ["React", "Node.js", "Express", "MongoDB"],
+    year: "2024",
+    role: "Frontend + integrations (existing platform)",
+    status: "Live",
+    country: { code: "gb", name: "United Kingdom" },
+  },
+  {
+    name: "Multilingual Bank Website",
+    summary:
+      "Integrated the backend and a secure admin panel for a banking site: authentication, blog management, Cloudinary image hosting, and language-specific content filtering across English and Turkish.",
+    stack: ["Next.js", "Node.js", "MongoDB", "Cloudinary"],
+    year: "2024",
+    role: "Backend + admin panel",
+    status: "Delivered",
+    country: { code: "tr", name: "Turkey" },
+  },
+];
+
+// ─── Reach (countries reached through client work) ────────────────────────────
+// Static reach map + visible list. Honest label: work delivered to these
+// countries, not offices or residence. Pakistan (home) is deliberately excluded.
+
+export const reachCountries: ReachCountry[] = [
+  { code: "gh", name: "Ghana", note: "Peki Portal + E-Voting Platform" },
+  { code: "gb", name: "United Kingdom", note: "Global Expeditions + LiveAutos" },
+  { code: "in", name: "India", note: "CRM label-filtering web app" },
+  { code: "tr", name: "Turkey", note: "Multilingual bank website" },
+  { code: "ca", name: "Canada", note: "Freelance web delivery" },
+  { code: "us", name: "United States", note: "Freelance web delivery" },
 ];
 
 // ─── Skills (evidence-based) ────────────────────────────────────────────────────
@@ -321,21 +483,50 @@ export const skillGroups: SkillGroup[] = [
   {
     label: "Frontend",
     skills: ["React", "Next.js", "Vue.js", "TypeScript", "TailwindCSS", "Konva.js", "MUI"],
-    provenBy: ["codecanvas", "feedsnap", "peki-student-portal", "ascend-bpo"],
+    provenBy: ["codecanvas", "feedsnap", "peki-student-portal", "ascend-bpo-ivr"],
   },
   {
     label: "Backend",
     skills: ["Node.js", "Express.js", "C# ASP.NET Core", "FastAPI", "REST APIs", "JWT", "WebSockets / SignalR"],
-    provenBy: ["ascend-bpo", "e-voting-platform", "codecanvas"],
+    provenBy: ["ascend-bpo-ivr", "e-voting-platform", "codecanvas"],
   },
   {
     label: "Data",
     skills: ["MongoDB", "SQL Server", "PostgreSQL / Supabase", "Postgres RLS", "Upstash Redis"],
-    provenBy: ["peki-student-portal", "feedsnap", "ascend-bpo"],
+    provenBy: ["peki-student-portal", "feedsnap", "ascend-bpo-ivr"],
   },
   {
     label: "Platform & Integrations",
     skills: ["Vercel", "Lemon Squeezy", "Hubtel", "Cloudinary", "Gemini 2.5 Pro", "YOLOv11"],
     provenBy: ["feedsnap", "peki-student-portal", "codecanvas"],
+  },
+];
+
+// Three of eight Fiverr reviews, chosen for signal not volume: 01 names actual
+// technical work, 02 ties to Ghana (where E-Voting and Peki shipped), 03 is
+// specific about delivery. The other five are generic one-liners. Text is
+// verbatim (lowercase "i", "mongoDb" preserved) — client writing is not edited.
+// No price/duration (reads as a rate card), no quotes naming "Pasha" (would
+// read as fabricated against the Hassan Iftikhar byline).
+export const testimonials: Testimonial[] = [
+  {
+    quote:
+      "He integrated backend with mongoDb and cloudinary along with admin panel in my nextjs web app. The delivery was high quality, and exactly how i described.",
+    username: "productshine",
+    country: "Turkey",
+    source: "via Fiverr",
+  },
+  {
+    quote: "Excellent communication skills. Very good at what he does.",
+    username: "packetsoutllc",
+    country: "Ghana",
+    source: "via Fiverr",
+  },
+  {
+    quote:
+      "I loved his professionalism in understanding the requirements and delivering the order before time.",
+    username: "atifqamar277",
+    country: "Canada",
+    source: "via Fiverr",
   },
 ];

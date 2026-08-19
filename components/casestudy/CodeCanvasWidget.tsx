@@ -118,14 +118,16 @@ export default function CodeCanvasWidget() {
     setEls((prev) => prev.filter((e) => e.id !== id));
   }
 
+  // Monochrome: types are distinguished by border-style + white-fill step, not
+  // hue (the whole system is colourless). The label text carries the exact type.
   const boxStyle = (t: ElType) =>
     ({
-      heading: "border-accent bg-accent/5 text-accent",
-      text: "border-text-sub bg-text-sub/5 text-text-sub",
-      button: "border-positive bg-positive/5 text-positive",
-      input: "border-warning bg-warning/5 text-warning",
-      image: "border-accent-dim bg-accent-dim/10 text-accent",
-      card: "border-text-faint bg-card text-text-faint",
+      heading: "border-solid border-fg bg-fg/15 text-fg",
+      text: "border-solid border-line2 bg-fg/[0.04] text-mut",
+      button: "border-solid border-fg bg-fg/25 text-fg",
+      input: "border-dashed border-fg/70 text-fg",
+      image: "border-dashed border-line2 text-mut",
+      card: "border-dotted border-line2 bg-card text-mut",
     })[t];
 
   return (
@@ -133,8 +135,8 @@ export default function CodeCanvasWidget() {
       {/* Canvas */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <span className="font-mono text-2xs uppercase tracking-widest text-text-faint">
-            Sketch — drag to draw, click a box to re-tag
+          <span className="font-mono text-2xs uppercase tracking-widest text-mut">
+            Sketch - drag to draw, click a box to re-tag
           </span>
         </div>
         <div
@@ -142,10 +144,10 @@ export default function CodeCanvasWidget() {
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
-          className="relative aspect-[4/3] w-full touch-none select-none rounded-lg border border-border bg-background"
+          className="relative aspect-[4/3] w-full touch-none select-none border border-line bg-bg"
           style={{
             backgroundImage:
-              "linear-gradient(#282D37 1px, transparent 1px), linear-gradient(90deg, #282D37 1px, transparent 1px)",
+              "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
             backgroundSize: "24px 24px",
           }}
         >
@@ -157,7 +159,7 @@ export default function CodeCanvasWidget() {
               onClick={() => cycleType(e.id)}
               onDoubleClick={() => remove(e.id)}
               title="Click to re-tag, double-click to delete"
-              className={`absolute rounded border-2 text-left ${boxStyle(e.type)}`}
+              className={`absolute border-2 text-left ${boxStyle(e.type)}`}
               style={{
                 left: `${e.x}%`,
                 top: `${e.y}%`,
@@ -172,7 +174,7 @@ export default function CodeCanvasWidget() {
           ))}
           {draft ? (
             <div
-              className="absolute rounded border-2 border-dashed border-accent/60"
+              className="absolute border-2 border-dashed border-fg/60"
               style={{
                 left: `${draft.x}%`,
                 top: `${draft.y}%`,
@@ -186,18 +188,18 @@ export default function CodeCanvasWidget() {
           <button
             type="button"
             onClick={() => setEls(EXAMPLE)}
-            className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-text-primary hover:border-accent-dim"
+            className="border border-line2 bg-card px-3 py-1.5 font-mono text-2xs uppercase tracking-widest text-fg transition-colors hover:border-fg"
           >
             Reset example
           </button>
           <button
             type="button"
             onClick={() => setEls([])}
-            className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-text-primary hover:border-accent-dim"
+            className="border border-line2 bg-card px-3 py-1.5 font-mono text-2xs uppercase tracking-widest text-fg transition-colors hover:border-fg"
           >
             Clear
           </button>
-          <span className="ml-auto self-center font-mono text-2xs text-text-faint">
+          <span className="ml-auto self-center font-mono text-2xs text-mut">
             {els.length} element{els.length === 1 ? "" : "s"} detected
           </span>
         </div>
@@ -206,11 +208,11 @@ export default function CodeCanvasWidget() {
       {/* Generated code */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <span className="font-mono text-2xs uppercase tracking-widest text-text-faint">
+          <span className="font-mono text-2xs uppercase tracking-widest text-mut">
             Generated React + Tailwind
           </span>
         </div>
-        <pre className="h-[calc(100%-1.75rem)] overflow-auto rounded-lg border border-border bg-background p-4 font-mono text-2xs leading-relaxed text-text-sub">
+        <pre className="h-[calc(100%-1.75rem)] overflow-auto border border-line bg-bg p-4 font-mono text-2xs leading-relaxed text-mut">
           <code>{code}</code>
         </pre>
       </div>

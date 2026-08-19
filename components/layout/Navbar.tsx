@@ -18,16 +18,16 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
       <nav
         aria-label="Primary"
-        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:px-8"
+        className="flex h-16 items-center justify-between px-[clamp(20px,5vw,72px)]"
       >
         <Link
           href="/"
-          className="font-mono text-sm font-semibold tracking-tight text-text-primary"
+          className="font-display text-sm font-extrabold uppercase tracking-tight text-fg"
         >
-          hassan<span className="text-accent">.dev</span>
+          Hassan Iftikhar
         </Link>
 
         {/* Desktop links */}
@@ -36,7 +36,7 @@ export default function Navbar() {
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm text-text-sub transition-colors duration-base hover:text-text-primary"
+              className="font-mono text-2xs uppercase tracking-widest text-mut transition-colors duration-base hover:text-fg"
             >
               {l.label}
             </Link>
@@ -49,13 +49,13 @@ export default function Navbar() {
             href={owner.github}
             target="_blank"
             rel="noreferrer noopener"
-            className="text-sm text-text-sub transition-colors duration-base hover:text-text-primary"
+            className="font-mono text-2xs uppercase tracking-widest text-mut transition-colors duration-base hover:text-fg"
           >
-            GitHub
+            GitHub ↗
           </a>
           <a
             href={owner.resumeUrl}
-            className="rounded-lg bg-accent px-3.5 py-1.5 text-sm font-semibold text-accent-ink transition-opacity duration-base hover:opacity-90"
+            className="bg-fg px-4 py-2 font-mono text-2xs font-semibold uppercase tracking-widest text-bg transition-colors duration-base hover:bg-mut"
           >
             Resume
           </a>
@@ -67,14 +67,30 @@ export default function Navbar() {
           aria-label="Toggle menu"
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-primary md:hidden"
+          className="inline-flex h-9 w-9 items-center justify-center border border-line text-fg md:hidden"
         >
           <span className="sr-only">Menu</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
             {open ? (
-              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M4 7h16M4 12h16M4 17h16"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             )}
           </svg>
         </button>
@@ -82,14 +98,14 @@ export default function Navbar() {
 
       {/* Mobile sheet */}
       {open ? (
-        <div className="border-t border-border bg-surface md:hidden">
-          <div className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4">
+        <div className="border-t border-line bg-bg md:hidden">
+          <div className="flex flex-col gap-1 px-[clamp(20px,5vw,72px)] py-4">
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-sm text-text-sub hover:bg-card hover:text-text-primary"
+                className="px-1 py-2.5 font-mono text-xs uppercase tracking-widest text-mut hover:text-fg"
               >
                 {l.label}
               </Link>
@@ -99,13 +115,13 @@ export default function Navbar() {
                 href={owner.github}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm text-text-primary"
+                className="flex-1 border border-line px-3 py-2.5 text-center font-mono text-2xs uppercase tracking-widest text-fg"
               >
-                GitHub
+                GitHub ↗
               </a>
               <a
                 href={owner.resumeUrl}
-                className="flex-1 rounded-lg bg-accent px-3 py-2 text-center text-sm font-semibold text-accent-ink"
+                className="flex-1 bg-fg px-3 py-2.5 text-center font-mono text-2xs font-semibold uppercase tracking-widest text-bg"
               >
                 Resume
               </a>

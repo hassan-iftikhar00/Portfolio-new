@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "components/casestudy/CodeCanvasStatic.tsx"
+        ],
+        "createdAt": "2026-08-18T22:58:50.310Z",
+        "reason": "snippet is a displayed code sample (template-literal string), not a rendered img tag"
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "app/globals.css"
+        ],
+        "createdAt": "2026-08-18T23:10:32.181Z",
+        "reason": "L118 is the prefers-reduced-motion reset (animation/transition-duration override), not a width/height/padding/margin animation; reveal keyframes use transform+opacity only"
+      }
+    ]
+  }
+}

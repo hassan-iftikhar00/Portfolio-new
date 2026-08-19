@@ -1,30 +1,38 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Unbounded, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 import { owner } from "@/lib/data";
+import Reveal from "@/components/motion/Reveal";
+import GrainOverlay from "@/components/layout/GrainOverlay";
 
-// Self-hosted, non-blocking fonts. Replaces the render-blocking <link>/@import.
-// Exposed as CSS variables consumed by tailwind.config.ts (sans / mono).
-const inter = Inter({
+// Self-hosted, non-blocking fonts. No render-blocking <link>/@import.
+// Exposed as CSS variables consumed by tailwind.config.ts.
+// Unbounded (display) + JetBrains Mono (labels) from Google; General Sans
+// (text + mixed-case display register) self-hosted from ./fonts (Fontshare).
+const unbounded = Unbounded({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  weight: ["600", "800"],
+  variable: "--font-unbounded",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
   variable: "--font-jetbrains",
   display: "swap",
 });
+
+// General Sans is self-hosted via @font-face in globals.css (stable /fonts path)
+// and preloaded below, so the LCP hero pitch does not wait on a font swap.
 
 const siteUrl = "https://hassaniftikhar.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Hassan Iftikhar — Full Stack Developer",
+    default: "Hassan Iftikhar - Full Stack Developer",
     template: "%s · Hassan Iftikhar",
   },
   description:
@@ -48,17 +56,17 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: owner.name,
-    title: "Hassan Iftikhar — Full Stack Developer",
+    title: "Hassan Iftikhar - Full Stack Developer",
     description:
       "Production SaaS engineer. AI sketch-to-code, multi-tenant feedback, live school and election platforms.",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: owner.name }],
+    // OG/Twitter images come from the generated opengraph-image / twitter-image
+    // file conventions (brutalist card), not a static /og.png.
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hassan Iftikhar — Full Stack Developer",
+    title: "Hassan Iftikhar - Full Stack Developer",
     description:
       "Production SaaS engineer. AI sketch-to-code, multi-tenant feedback, live school and election platforms.",
-    images: ["/og.png"],
   },
   robots: {
     index: true,
@@ -88,16 +96,37 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${unbounded.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="bg-background text-text-primary antialiased">
+      <head>
+        {/* Preload the above-the-fold General Sans weights (Regular = LCP hero
+            pitch, Medium = tail/labels) so text paints without a swap delay. */}
+        <link
+          rel="preload"
+          href="/fonts/GeneralSans-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/GeneralSans-Medium.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body className="bg-bg text-fg antialiased">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-accent-ink"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-fg focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:font-semibold focus:uppercase focus:text-bg"
         >
           Skip to content
         </a>
         {children}
+        <GrainOverlay />
+        <Reveal />
+        <Analytics />
         <script
           type="application/ld+json"
           // JSON-LD is static, controlled data. Not user input.

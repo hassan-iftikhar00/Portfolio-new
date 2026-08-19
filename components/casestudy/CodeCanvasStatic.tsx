@@ -3,11 +3,11 @@
 // when JavaScript is disabled. Same idea as the widget, painted as plain HTML.
 
 const boxes = [
-  { type: "heading", x: 6, y: 8, w: 60, h: 12, cls: "border-accent text-accent" },
-  { type: "text", x: 6, y: 26, w: 78, h: 14, cls: "border-text-sub text-text-sub" },
-  { type: "input", x: 6, y: 50, w: 55, h: 12, cls: "border-warning text-warning" },
-  { type: "button", x: 65, y: 50, w: 24, h: 12, cls: "border-positive text-positive" },
-  { type: "image", x: 6, y: 70, w: 40, h: 24, cls: "border-accent-dim text-accent" },
+  { type: "heading", x: 6, y: 8, w: 60, h: 12, cls: "border-solid border-fg bg-fg/15 text-fg" },
+  { type: "text", x: 6, y: 26, w: 78, h: 14, cls: "border-solid border-line2 bg-fg/[0.04] text-mut" },
+  { type: "input", x: 6, y: 50, w: 55, h: 12, cls: "border-dashed border-fg/70 text-fg" },
+  { type: "button", x: 65, y: 50, w: 24, h: 12, cls: "border-solid border-fg bg-fg/25 text-fg" },
+  { type: "image", x: 6, y: 70, w: 40, h: 24, cls: "border-dashed border-line2 text-mut" },
 ];
 
 const snippet = `export default function Generated() {
@@ -26,21 +26,21 @@ export default function CodeCanvasStatic() {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <div>
-        <span className="mb-2 block font-mono text-2xs uppercase tracking-widest text-text-faint">
+        <span className="mb-2 block font-mono text-2xs uppercase tracking-widest text-mut">
           Sketch
         </span>
         <div
-          className="relative aspect-[4/3] w-full rounded-lg border border-border bg-background"
+          className="relative aspect-[4/3] w-full border border-line bg-bg"
           style={{
             backgroundImage:
-              "linear-gradient(#282D37 1px, transparent 1px), linear-gradient(90deg, #282D37 1px, transparent 1px)",
+              "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
             backgroundSize: "24px 24px",
           }}
         >
           {boxes.map((b) => (
             <div
               key={b.type}
-              className={`absolute rounded border-2 ${b.cls}`}
+              className={`absolute border-2 ${b.cls}`}
               style={{
                 left: `${b.x}%`,
                 top: `${b.y}%`,
@@ -56,10 +56,10 @@ export default function CodeCanvasStatic() {
         </div>
       </div>
       <div>
-        <span className="mb-2 block font-mono text-2xs uppercase tracking-widest text-text-faint">
+        <span className="mb-2 block font-mono text-2xs uppercase tracking-widest text-mut">
           Generated React + Tailwind
         </span>
-        <pre className="overflow-auto rounded-lg border border-border bg-background p-4 font-mono text-2xs leading-relaxed text-text-sub">
+        <pre className="overflow-auto border border-line bg-bg p-4 font-mono text-2xs leading-relaxed text-mut">
           <code>{snippet}</code>
         </pre>
       </div>

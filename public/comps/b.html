@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Comp B — Warm ink</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0E0D0C; --surf:#171513; --card:#1C1916; --text:#EDE8E0; --mut:#9A9186; --faint:#5F594F;
+    --ember:#E8552B; --amber:#C9A227; --line:rgba(237,232,224,.09); --line2:rgba(237,232,224,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--text);font-family:"Satoshi",system-ui,sans-serif;font-size:17px;line-height:1.55;overflow-x:hidden}
+  ::selection{background:var(--ember);color:#fff}
+  .mono{font-family:"JetBrains Mono",monospace}
+  .disp{font-family:"Clash Display",sans-serif;letter-spacing:-.02em;line-height:.94}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,52px)}
+
+  /* subtle warm glow behind hero */
+  .glow{position:absolute;top:-160px;left:50%;transform:translateX(-50%);width:900px;height:520px;background:radial-gradient(closest-side,rgba(232,85,43,.14),transparent 70%);pointer-events:none;z-index:0}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:26px 0}
+  .brand{font-family:"Clash Display",sans-serif;font-weight:600;font-size:19px}
+  .brand i{color:var(--ember);font-style:normal}
+  nav{display:flex;gap:28px;font-size:14px;color:var(--mut)}
+  nav a:hover{color:var(--text)}
+
+  .hero{position:relative;padding:clamp(60px,10vw,130px) 0 clamp(44px,6vw,84px);z-index:1}
+  .chip{display:inline-flex;align-items:center;gap:9px;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.05em;color:var(--amber);border:1px solid rgba(201,162,39,.35);background:rgba(201,162,39,.07);border-radius:100px;padding:7px 15px}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  h1.hero-t{font-family:"Clash Display",sans-serif;font-weight:600;font-size:clamp(3.4rem,12vw,10.5rem);letter-spacing:-.03em;line-height:.92;margin-top:30px;max-width:15ch}
+  h1.hero-t .em{color:var(--ember)}
+  .pitch{font-size:clamp(19px,2vw,22px);color:var(--mut);max-width:40ch;margin-top:34px;line-height:1.5}
+  .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px;align-items:center}
+  .btn{padding:14px 24px;border-radius:10px;font-weight:700;font-size:14px}
+  .btn.solid{background:var(--ember);color:#fff}
+  .btn.solid:hover{background:#ff6a42}
+  .btn.ghost{border:1px solid var(--line2);color:var(--text)}
+  .btn.ghost:hover{border-color:var(--amber);color:var(--amber)}
+  .link{font-size:14px;color:var(--mut)}
+  .link:hover{color:var(--text)}
+
+  .sec{padding:clamp(64px,8vw,120px) 0}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:46px}
+  .sec-num{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ember)}
+  .sec-title{font-family:"Clash Display",sans-serif;font-weight:600;font-size:clamp(26px,3.4vw,42px);letter-spacing:-.02em}
+  .sec-rule{flex:1;height:1px;background:var(--line)}
+
+  /* work — stacked cards */
+  .cards{display:grid;grid-template-columns:1fr;gap:18px}
+  @media(min-width:760px){.cards{grid-template-columns:1fr 1fr}}
+  .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;transition:border-color .3s,transform .3s;overflow:hidden}
+  .card:hover{border-color:var(--line2);transform:translateY(-4px)}
+  .card::before{content:"";position:absolute;left:0;top:0;height:100%;width:3px;background:var(--ember);opacity:0;transition:opacity .3s}
+  .card:hover::before{opacity:1}
+  .card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .card .cat{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.05em;color:var(--faint);text-transform:uppercase}
+  .badge{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.04em;padding:4px 10px;border-radius:100px}
+  .badge.live{color:#7BE0A6;border:1px solid rgba(123,224,166,.3);background:rgba(123,224,166,.08)}
+  .badge.arch{color:var(--mut);border:1px solid var(--line2)}
+  .card h3{font-family:"Clash Display",sans-serif;font-weight:600;font-size:clamp(28px,3.2vw,38px);letter-spacing:-.02em;line-height:1}
+  .card p{color:var(--mut);font-size:15px;margin-top:12px;line-height:1.5}
+  .card .stack{margin-top:22px;display:flex;flex-wrap:wrap;gap:7px}
+  .card .stack span{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mut);border:1px solid var(--line);padding:4px 9px;border-radius:6px}
+
+  /* experience timeline */
+  .exp{border-left:1px solid var(--line2);margin-left:6px}
+  .job{position:relative;padding:0 0 44px 34px}
+  .job:last-child{padding-bottom:0}
+  .job::before{content:"";position:absolute;left:-5px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--ember)}
+  .job .when{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--amber)}
+  .job h3{font-family:"Clash Display",sans-serif;font-weight:600;font-size:clamp(20px,2.4vw,26px);letter-spacing:-.01em;margin-top:8px}
+  .job .co{font-size:14px;color:var(--faint);margin-top:2px}
+  .job p{color:var(--mut);margin-top:12px;max-width:60ch;font-size:15px}
+  .job .stack{margin-top:16px;display:flex;flex-wrap:wrap;gap:7px}
+  .job .stack span{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mut);border:1px solid var(--line);padding:4px 9px;border-radius:6px}
+  footer{padding:44px 0;border-top:1px solid var(--line);font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--faint);display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+  <header>
+    <div class="brand">hassan<i>.</i>dev</div>
+    <nav><a href="#">Work</a><a href="#">Experience</a><a href="#">Contact</a><a href="#">Resume ↗</a></nav>
+  </header>
+
+  <section class="hero">
+    <span class="chip"><span class="dot"></span>AVAILABLE FOR WORK</span>
+    <h1 class="hero-t">I build production software that <span class="em">ships</span> and stays up.</h1>
+    <p class="pitch">Full stack developer, 2+ years shipping production SaaS for international clients across travel, enterprise, and edtech. React, Vue, and Next.js on Node, Express, and C#.</p>
+    <div class="cta">
+      <a class="btn solid" href="#">View the work</a>
+      <a class="btn ghost" href="#">Download resume</a>
+      <a class="link" href="#">GitHub ↗</a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Selected work</h2><span class="sec-rule"></span></div>
+    <div class="cards">
+      <a class="card" href="#">
+        <div class="top"><span class="cat">AI · Sketch-to-Code</span><span class="badge arch">Archived</span></div>
+        <h3>CodeCanvas</h3>
+        <p>Hand-drawn UI wireframes into production React + Tailwind through a YOLOv11 detection and Gemini 2.5 Pro generation pipeline.</p>
+        <div class="stack"><span>Next.js 14</span><span>FastAPI</span><span>Konva.js</span><span>Gemini</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="top"><span class="cat">Visual Feedback SaaS</span><span class="badge live">● Live</span></div>
+        <h3>FeedSnap</h3>
+        <p>Marker.io competitor. Screenshot-annotated comments pinned at exact coordinates; Lemon Squeezy billing, SSRF-safe screenshots, Redis rate limiting.</p>
+        <div class="stack"><span>Next.js 16</span><span>Supabase</span><span>Postgres RLS</span><span>Redis</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="top"><span class="cat">Enrolment Platform</span><span class="badge live">● Live</span></div>
+        <h3>Peki Portal</h3>
+        <p>Dual student/admin portals, Hubtel payment gateway, SMS credential delivery, Cloudinary storage, RBAC across 13 MongoDB models.</p>
+        <div class="stack"><span>Next.js 15</span><span>MongoDB</span><span>Hubtel</span><span>pdf-lib</span></div>
+      </a>
+      <a class="card" href="#">
+        <div class="top"><span class="cat">White-label Elections</span><span class="badge live">● Live</span></div>
+        <h3>E-Voting SaaS</h3>
+        <p>Full election lifecycle with RBAC, multi-election isolation, cryptographic PDF vote receipts, and real-time Chart.js dashboards.</p>
+        <div class="stack"><span>React 18</span><span>Node</span><span>Express</span><span>MongoDB</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Experience</h2><span class="sec-rule"></span></div>
+    <div class="exp">
+      <div class="job">
+        <div class="when">Aug 2025 — Jan 2026</div>
+        <h3>Team Lead & Full Stack Developer</h3>
+        <div class="co">Ascend BPO Services · Remote</div>
+        <p>Led a 3-person team building a production IVR Flow Builder and real-time analytics portal that replaced the legacy call router. Full C# ASP.NET Core + SQL Server backend, SignalR push, a DataGrid virtualized to 100k rows.</p>
+        <div class="stack"><span>React 19</span><span>ReactFlow</span><span>SignalR</span><span>C# ASP.NET Core</span><span>SQL Server</span></div>
+      </div>
+      <div class="job">
+        <div class="when">Nov 2023 — Nov 2024</div>
+        <h3>Team Lead & Full Stack Developer</h3>
+        <div class="co">Global Expeditions SMC · London, Remote</div>
+        <p>Led full-stack development of a B2B SaaS travel platform. Architected four role-based panels from SuperAdmin to AgentPanel with isolated access controls and scalable REST APIs.</p>
+        <div class="stack"><span>Vue.js</span><span>Node.js</span><span>Express</span><span>MongoDB</span><span>SASS</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer><span>Lahore, Pakistan</span><span>hassaniftikhardev@gmail.com</span></footer>
+</div>
+</body>
+</html>

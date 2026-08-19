@@ -31,7 +31,18 @@ const eVotingStages: Stage[] = [
   { label: "Chart.js results", sub: "real-time dashboard" },
 ];
 
+const ascendStages: Stage[] = [
+  { label: "ReactFlow canvas", sub: "drag-and-drop IVR flows" },
+  { label: "Routing engine", sub: "conditional / DTMF", emphasis: true },
+  { label: "ASP.NET Core API", sub: "C# on SQL Server", emphasis: true },
+  { label: "Analytics portal", sub: "virtualized 100k-row grid" },
+];
+
 const diagrams: Record<string, { stages: Stage[]; loop?: string } | undefined> = {
+  AscendArchitecture: {
+    stages: ascendStages,
+    loop: "SignalR pushes live KPIs from the API to every open dashboard over one connection.",
+  },
   CodeCanvasArchitecture: {
     stages: codeCanvasStages,
     loop: "Chat refinement feeds back into synthesis without re-running detection.",
@@ -55,11 +66,11 @@ export default function Architecture({
         <PipelineDiagram stages={diagram.stages} loop={diagram.loop} />
       ) : (
         // Fallback until this study's diagram is built.
-        <div className="rounded-xl border border-dashed border-border bg-surface p-6 text-sm text-text-sub">
+        <div className="border border-dashed border-line2 bg-card p-6 text-sm text-mut">
           {caption}
         </div>
       )}
-      <figcaption className="mt-3 text-xs text-text-faint">{caption}</figcaption>
+      <figcaption className="mt-3 font-mono text-2xs uppercase tracking-widest text-mut">{caption}</figcaption>
     </figure>
   );
 }

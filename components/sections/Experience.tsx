@@ -1,64 +1,82 @@
+import Image from "next/image";
 import { experiences } from "@/lib/data";
 
-// Server component.
+// Server component. Big ledger rows, hairline-separated — deliberately a
+// different structure from Work's spotlight rows so three sections do not read
+// as the same template. Date / role+summary / stack across the row.
 export default function Experience() {
   return (
-    <section id="experience" className="scroll-mt-20 border-t border-border">
-      <div className="mx-auto max-w-6xl px-6 py-16 lg:px-8 lg:py-20">
-        <div className="mb-10">
-          <h2 className="font-mono text-2xs uppercase tracking-widest text-accent">
-            Experience
-          </h2>
-          <p className="mt-3 max-w-2xl text-2xl font-semibold text-text-primary">
-            Team lead on two production platforms.
-          </p>
-        </div>
+    <section
+      id="experience"
+      className="scroll-mt-20 border-t border-line px-[clamp(20px,5vw,72px)] py-[clamp(72px,11vw,180px)]"
+    >
+      <div data-reveal className="flex items-end gap-5 border-b border-line pb-8">
+        <span className="font-display text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-none text-faint">
+          02
+        </span>
+        <h2 className="pb-1 font-mono text-2xs uppercase tracking-[0.2em] text-fg">
+          Experience
+        </h2>
+      </div>
 
-        <ol className="space-y-5">
-          {experiences.map((e) => (
-            <li
-              key={e.company}
-              className="rounded-xl border border-border bg-card p-6 shadow-card"
-            >
-              <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between">
-                <h3 className="text-lg font-semibold text-text-primary">
-                  {e.role}
-                </h3>
-                <span className="font-mono text-2xs text-text-faint">
-                  {e.period}
+      <ol>
+        {experiences.map((e) => (
+          <li
+            key={e.company}
+            data-reveal
+            className="grid grid-cols-1 gap-x-10 gap-y-4 border-b border-line py-[clamp(28px,4vw,52px)] md:grid-cols-[210px_1fr_auto]"
+          >
+            <div>
+              {e.logo ? (
+                // White chip so both a transparent PNG and a white-background JPEG
+                // read uniformly on the black ground; grayscale folds brand colour
+                // into the mono system while the mark stays legible.
+                <span className="mb-4 inline-flex bg-white px-3 py-2">
+                  <span className="relative block h-7 w-24">
+                    <Image
+                      src={e.logo}
+                      alt={`${e.company} logo`}
+                      fill
+                      sizes="96px"
+                      className="object-contain object-center grayscale contrast-125"
+                    />
+                  </span>
                 </span>
-              </div>
-              <p className="mt-0.5 text-sm font-medium text-accent">
+              ) : null}
+              <span className="block font-mono text-xs uppercase tracking-widest text-mut">
+                {e.period}
+              </span>
+            </div>
+
+            <div>
+              <h3 className="font-sans text-[clamp(1.4rem,2.6vw,2rem)] font-semibold leading-tight tracking-tight">
+                {e.role}
+              </h3>
+              <p className="mt-1 font-mono text-2xs uppercase tracking-widest text-mut">
                 {e.company}
               </p>
-              <p className="mt-3 text-sm text-text-sub">{e.summary}</p>
-
+              <p className="mt-4 max-w-[62ch] text-sm text-mut">{e.summary}</p>
               <ul className="mt-4 space-y-2">
                 {e.achievements.map((a, i) => (
-                  <li key={i} className="flex gap-2.5 text-sm text-text-sub">
+                  <li key={i} className="flex gap-3 text-sm text-mut">
                     <span
                       aria-hidden="true"
-                      className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent-dim"
+                      className="mt-2 h-px w-3 shrink-0 bg-line2"
                     />
                     {a}
                   </li>
                 ))}
               </ul>
+            </div>
 
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {e.tech.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded border border-border bg-surface px-2 py-1 font-mono text-2xs text-text-sub"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </li>
-          ))}
-        </ol>
-      </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-2xs text-mut md:max-w-[160px] md:justify-end md:text-right">
+              {e.tech.map((t) => (
+                <span key={t}>{t}</span>
+              ))}
+            </div>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

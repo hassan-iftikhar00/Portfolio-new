@@ -2,8 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fonts self-hosted via next/font/google in app/layout.tsx.
-   --font-inter / --font-jetbrains are injected there; no render-blocking @import. */
+/* Unbounded + JetBrains Mono via next/font (app/layout.tsx). General Sans is
+   self-hosted here on a stable /fonts path (not next/font) so it can be
+   explicitly preloaded — it is the site's base text and the hero pitch is the
+   LCP element, so preloading kills the font-swap render delay. */
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
 * {
   box-sizing: border-box;
@@ -18,39 +41,137 @@ html {
 }
 
 body {
-  background-color: #0b0d10;
-  color: #eaecef;
-  font-family: var(--font-inter);
+  background-color: #000;
+  color: #fff;
+  font-family: "General Sans", system-ui, sans-serif;
   overflow-x: hidden;
 }
 
-/* Visible keyboard focus. One token, applied via :focus-visible everywhere. */
+/* Visible keyboard focus. White ring reads on the black ground. */
 :focus-visible {
-  outline: 2px solid theme("colors.accent.DEFAULT");
-  outline-offset: 2px;
-  border-radius: 2px;
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  border-radius: 0;
 }
 
-/* Selection + scrollbar in the real accent. */
+/* Selection is monochrome: white block, black text. No accent hue. */
 ::selection {
-  background: rgba(94, 234, 212, 0.22);
-  color: #eaecef;
+  background: #fff;
+  color: #000;
 }
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b0d10;
+  background: #000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #282d37;
-  border-radius: 4px;
+  background: #2a2a2a;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a4455;
+  background: #444;
 }
 
-/* Honor reduced-motion globally: no transitions/animations, no smooth scroll. */
+/* --- Hero display: character/word mask reveal, staggered ---
+   Each word sits in an overflow-hidden box; the inner span slides up from
+   below. Delays are set inline per word. Static under reduced-motion. */
+@keyframes char-in {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.rmask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.02em; /* guard descenders from the clip edge */
+}
+.rmask > span {
+  display: inline-block;
+  transform: translateY(105%);
+  animation: char-in 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* --- Scroll reveal (JS-driven, all browsers) ---
+   Elements marked [data-reveal] fade + rise into place as they scroll into view.
+   The hidden state is scoped under html.js-reveal, a class added only by
+   components/motion/Reveal.tsx. So: with JS off (class never added) content is
+   always visible; under reduced-motion (component early-returns) content is
+   always visible; otherwise it starts hidden and .is-in (added by the observer)
+   plays it in. Never applied to the hero (LCP paints immediately). */
+.js-reveal [data-reveal] {
+  opacity: 0;
+  transform: translateY(38px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.js-reveal [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+/* Rows inside a revealed list stagger via a small per-child delay so a section
+   assembles rather than snapping in all at once. */
+.js-reveal [data-reveal].is-in {
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* --- Hero 3D extruded word (SOFTWARE) ---
+   The white front face sits on stacked grey shadow layers receding down-right,
+   which reads as a solid extrusion on the black ground (monochrome, no hue).
+   Offsets are in em so the depth scales with the clamp() font-size (never heavy
+   at 375, never thin at 1920). The whole unit tilts via a perspective + rotate
+   driven by --hx/--hy (set by components/motion/HeroTilt.tsx on scroll).
+   Because only the transform changes per frame — composited on the GPU — the
+   many shadow layers are painted once, not re-rasterised while scrolling.
+   Base state carries a fixed tilt so the depth reads with no JS; reduced-motion
+   holds that static extruded state (never a flat word). */
+.hero-extrude {
+  display: inline-block;
+  color: #fff;
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--hx, 9deg)) rotateY(var(--hy, -7deg));
+  transform-origin: 20% 60%;
+  will-change: transform;
+  text-shadow: 0.014em 0.014em 0 #cfcfcf, 0.028em 0.028em 0 #ababab,
+    0.042em 0.042em 0 #8a8a8a, 0.056em 0.056em 0 #6a6a6a,
+    0.07em 0.07em 0 #4a4a4a, 0.084em 0.084em 0 #303030,
+    0.1em 0.1em 0.08em rgba(0, 0, 0, 0.55);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-extrude {
+    transform: perspective(900px) rotateX(9deg) rotateY(-7deg);
+  }
+}
+
+/* --- Custom cursor (mix-blend-mode: difference) ---
+   Pointer-fine only. Decorative, pointer-events:none, never blocks input.
+   The native cursor stays visible for usability. */
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 90;
+  transform: translate3d(-100px, -100px, 0);
+  transition: width 0.2s, height 0.2s;
+  will-change: transform;
+}
+.cursor-dot.is-hot {
+  width: 46px;
+  height: 46px;
+}
+
+/* Honor reduced-motion globally: kill animation, marquee, cursor motion,
+   smooth scroll. Content stays fully readable and in place. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -62,5 +183,30 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .rmask > span {
+    transform: none;
+    animation: none;
+  }
+  .cursor-dot {
+    display: none;
+  }
+}
+
+/* No custom cursor on coarse pointers / no-hover devices. */
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot {
+    display: none;
+  }
+}
+
+/* Reach map: optional per-country highlight on pointer-fine devices only.
+   Never required to read the data (the labelled list carries that). */
+.reach-map path[data-c] {
+  transition: fill-opacity 0.2s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .reach-map path[data-c]:hover {
+    fill-opacity: 1;
   }
 }

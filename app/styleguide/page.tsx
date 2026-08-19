@@ -23,9 +23,19 @@ const accents = [
 ];
 
 const texts = [
-  { name: "text.primary", hex: "#EAECEF", ratio: "~16:1", use: "Headings, body" },
+  {
+    name: "text.primary",
+    hex: "#EAECEF",
+    ratio: "~16:1",
+    use: "Headings, body",
+  },
   { name: "text.sub", hex: "#AEB6C2", ratio: "~9:1", use: "Secondary copy" },
-  { name: "text.faint", hex: "#858D9B", ratio: "~5.5:1", use: "Labels, captions" },
+  {
+    name: "text.faint",
+    hex: "#858D9B",
+    ratio: "~5.5:1",
+    use: "Labels, captions",
+  },
 ];
 
 const status = [
@@ -115,9 +125,9 @@ export default function StyleGuidePage() {
           Style guide
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-text-sub">
-          The single source of truth for color, type, spacing, and motion.
-          Every real page is built from these tokens. Reviewed before the build,
-          not after.
+          The single source of truth for color, type, spacing, and motion. Every
+          real page is built from these tokens. Reviewed before the build, not
+          after.
         </p>
       </header>
 
@@ -133,7 +143,7 @@ export default function StyleGuidePage() {
       </Section>
 
       <Section
-        title="Color — accent"
+        title="Color - accent"
         note="One accent, used deliberately. Not a rainbow of mislabeled greys."
       >
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -144,7 +154,7 @@ export default function StyleGuidePage() {
       </Section>
 
       <Section
-        title="Color — text"
+        title="Color - text"
         note="Each role verified for WCAG AA (>=4.5:1) on the page background."
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -165,7 +175,7 @@ export default function StyleGuidePage() {
         </div>
       </Section>
 
-      <Section title="Color — status" note="Used sparingly for state only.">
+      <Section title="Color - status" note="Used sparingly for state only.">
         <div className="grid grid-cols-3 gap-4">
           {status.map((s) => (
             <Swatch key={s.name} {...s} />
@@ -183,9 +193,7 @@ export default function StyleGuidePage() {
               key={t.token}
               className="flex items-baseline justify-between gap-4 border-b border-border/60 pb-3"
             >
-              <span className={t.token + " text-text-primary"}>
-                {t.label}
-              </span>
+              <span className={t.token + " text-text-primary"}>{t.label}</span>
               <span className="shrink-0 font-mono text-2xs text-text-faint">
                 {t.token} · {t.px}px
               </span>
@@ -262,7 +270,10 @@ export default function StyleGuidePage() {
         </div>
       </Section>
 
-      <Section title="Primitives" note="Badges and chips reused across case studies.">
+      <Section
+        title="Primitives"
+        note="Badges and chips reused across case studies."
+      >
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-positive/30 bg-positive/10 px-2.5 py-1 text-2xs font-medium text-positive">
             <span className="h-1.5 w-1.5 rounded-full bg-positive" />
@@ -292,8 +303,9 @@ export default function StyleGuidePage() {
       >
         <div className="animate-fade-up rounded-lg border border-border bg-card p-5">
           <p className="text-sm text-text-sub">
-            This block uses <span className="font-mono text-accent">animate-fade-up</span>.
-            With reduced-motion enabled it appears instantly, no transform.
+            This block uses{" "}
+            <span className="font-mono text-accent">animate-fade-up</span>. With
+            reduced-motion enabled it appears instantly, no transform.
           </p>
         </div>
       </Section>

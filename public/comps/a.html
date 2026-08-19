@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Comp A2 — Paper, pushed</title>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,700,800&f[]=switzer@400,500,600&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#F4F1EA; --ink:#16150F; --mut:#6B6559; --faint:#9A9488;
+    --ox:#7A2E1E;                       /* the ONE accent — used <=4 times total */
+    --line:rgba(22,21,15,.12);          /* ink hairline on paper */
+    --grid:rgba(22,21,15,.045);         /* even fainter, background grid */
+    --pad:clamp(20px,4vw,72px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:"Switzer",system-ui,sans-serif;font-size:17px;line-height:1.5;overflow-x:hidden;
+    /* ink hairline grid, low opacity, as page texture */
+    background-image:
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:clamp(90px,10vw,150px) 100%;
+  }
+  ::selection{background:var(--ink);color:var(--paper)}   /* mono, no accent */
+  .mono{font-family:"JetBrains Mono",monospace}
+  .disp{font-family:"Zodiak",Georgia,serif;letter-spacing:-.02em;line-height:.9}
+  a{color:inherit;text-decoration:none}
+  .edge{padding-left:var(--pad);padding-right:var(--pad)}
+  .measure{max-width:56ch}
+  .narrow{max-width:40ch}
+
+  /* header */
+  header{display:flex;justify-content:space-between;align-items:center;padding:26px var(--pad);border-bottom:1px solid var(--line)}
+  .brand{font-family:"Zodiak",serif;font-weight:700;font-size:19px;letter-spacing:-.01em}
+  .brand i{color:var(--ox);font-style:normal}                 /* ACCENT USE — the period dot */
+  nav{display:flex;gap:26px;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
+  nav a:hover{color:var(--ink)}
+
+  /* marquee texture — CSS only, reduced-motion gated, ink faint (no accent) */
+  .marq{border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:12px 0}
+  .marq div{display:inline-block;animation:scroll 34s linear infinite;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  .marq b{font-weight:400;margin:0 22px}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.marq div{animation:none}}
+
+  /* HERO — bleeds to the left viewport edge, breaks the column */
+  .hero{position:relative;padding:clamp(70px,11vw,150px) var(--pad) clamp(80px,12vw,170px)}
+  .chip{display:inline-flex;align-items:center;gap:9px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ox);border:1px solid var(--ox);border-radius:100px;padding:6px 14px}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--ox)}  /* same accent appearance as chip */
+  h1.hero-t{font-family:"Zodiak",serif;font-weight:800;font-size:clamp(4rem,15.5vw,15rem);letter-spacing:-.03em;line-height:.86;margin-top:38px;margin-left:-.06em;max-width:none}
+  h1.hero-t .em{font-style:italic;font-weight:700;color:var(--ox)}         /* ACCENT USE — one hero word */
+  .hero-foot{margin-top:clamp(48px,7vw,96px);display:grid;grid-template-columns:1fr;gap:34px}
+  @media(min-width:900px){.hero-foot{grid-template-columns:auto 1fr;gap:clamp(56px,8vw,140px);align-items:start}}
+  .pitch{font-size:clamp(19px,2.1vw,23px);line-height:1.45;color:#2b2920}
+  .cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:30px}
+  .btn{padding:14px 24px;font-weight:600;font-size:14px;border:1px solid var(--ink)}
+  .btn.solid{background:var(--ink);color:var(--paper)}
+  .btn.solid:hover{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+  .link{font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--line)}
+  .link:hover{color:var(--ink)}
+  .vlabel{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+
+  /* section head — oversized Zodiak numeral in the margin, bleeding past the edge */
+  .sec{position:relative;padding:clamp(120px,15vw,230px) 0 0}
+  .sec-head{position:relative;padding:0 var(--pad);margin-bottom:clamp(56px,7vw,110px)}
+  .sec-num{position:absolute;left:-.04em;top:-.62em;font-family:"Zodiak",serif;font-weight:800;font-size:clamp(9rem,26vw,24rem);line-height:1;color:var(--ox);pointer-events:none;z-index:0}  /* ACCENT USE */
+  .sec-label{position:relative;z-index:1;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+  .sec-title{position:relative;z-index:1;font-family:"Zodiak",serif;font-weight:700;font-size:clamp(30px,4.4vw,58px);letter-spacing:-.015em;margin-top:14px}
+
+  /* WORK — wide, full-bleed editorial rows (this section is intentionally WIDE) */
+  .rows{border-top:1px solid var(--line)}
+  .row{display:grid;grid-template-columns:1fr;gap:10px;padding:clamp(34px,4.5vw,64px) var(--pad);border-bottom:1px solid var(--line);transition:background .3s}
+  .row:hover{background:rgba(22,21,15,.025)}
+  @media(min-width:900px){.row{grid-template-columns:5rem minmax(0,1fr) minmax(0,30ch) auto;gap:clamp(28px,4vw,64px);align-items:baseline}}
+  .row .idx{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--faint)}
+  .row .name{font-family:"Zodiak",serif;font-weight:700;font-size:clamp(34px,5vw,68px);letter-spacing:-.02em;line-height:.95}
+  .row .desc{color:var(--mut);font-size:15px;line-height:1.5}
+  .row .meta{display:flex;flex-direction:column;gap:8px}
+  @media(min-width:900px){.row .meta{align-items:flex-end;text-align:right}}
+  .tag{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.03em;color:var(--faint)}
+  .badge{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--line);border-radius:100px;color:var(--mut)}  /* monochrome, no accent */
+
+  /* EXPERIENCE — deliberately DIFFERENT structure + NARROW measure, offset right */
+  .exp-wrap{padding:0 var(--pad)}
+  .exp{border-top:1px solid var(--line);max-width:64ch;margin-left:auto}      /* measure shift: narrow, pushed right */
+  .job{padding:clamp(40px,5vw,72px) 0;border-bottom:1px solid var(--line)}
+  .job .when{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.05em;color:var(--mut)}
+  .job .co{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--faint);margin-top:4px}
+  .job h3{font-family:"Zodiak",serif;font-weight:700;font-size:clamp(24px,3.2vw,38px);letter-spacing:-.01em;margin-top:20px}
+  .job p{color:#3a382f;margin-top:14px;font-size:16px;line-height:1.55}
+  .job .stack{margin-top:20px;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--faint);letter-spacing:.02em}
+
+  footer{margin-top:clamp(120px,15vw,220px);padding:44px var(--pad);border-top:1px solid var(--line);font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">Hassan Iftikhar<i>.</i></div>
+    <nav><a href="#">Work</a><a href="#">Experience</a><a href="#">Contact</a><a href="#">Resume ↗</a></nav>
+  </header>
+
+  <div class="marq"><div><b>Full Stack Developer</b>—<b>React</b>—<b>Next.js</b>—<b>Vue</b>—<b>Node</b>—<b>C# ASP.NET Core</b>—<b>Lahore, Pakistan</b>—<b>Full Stack Developer</b>—<b>React</b>—<b>Next.js</b>—<b>Vue</b>—<b>Node</b>—<b>C# ASP.NET Core</b>—<b>Lahore, Pakistan</b>—</div></div>
+
+  <section class="hero">
+    <span class="chip"><span class="dot"></span>Available for work</span>
+    <h1 class="hero-t">Software that <span class="em">ships</span> and stays up.</h1>
+    <div class="hero-foot">
+      <div class="vlabel">Full-stack · 2025</div>
+      <div>
+        <p class="pitch measure">Full stack developer, 2+ years shipping production SaaS for international clients across travel, enterprise, and edtech. React, Vue, and Next.js frontends on Node, Express, and C# backends.</p>
+        <div class="cta">
+          <a class="btn solid" href="#">View the work</a>
+          <a class="btn ghost" href="#">Download resume</a>
+          <a class="link" href="#">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <div class="sec-label">Selected work</div>
+      <h2 class="sec-title">Four production systems.</h2>
+    </div>
+    <div class="rows">
+      <div class="row">
+        <span class="idx">01</span>
+        <span class="name">CodeCanvas</span>
+        <span class="desc">Hand-drawn UI wireframes into production React + Tailwind through a YOLOv11 detection and Gemini 2.5 Pro generation pipeline.</span>
+        <span class="meta"><span class="badge">FYP · Lead</span><span class="tag">Next.js · FastAPI · Konva</span></span>
+      </div>
+      <div class="row">
+        <span class="idx">02</span>
+        <span class="name">FeedSnap</span>
+        <span class="desc">Marker.io competitor. Screenshot-annotated comments pinned at exact coordinates; Lemon Squeezy billing, SSRF-safe screenshots, Redis rate limiting.</span>
+        <span class="meta"><span class="badge">Live</span><span class="tag">Next.js 16 · Supabase · Redis</span></span>
+      </div>
+      <div class="row">
+        <span class="idx">03</span>
+        <span class="name">Peki Portal</span>
+        <span class="desc">Live enrolment platform. Dual student/admin portals, Hubtel payments, SMS credential delivery, RBAC across 13 MongoDB models.</span>
+        <span class="meta"><span class="badge">Live</span><span class="tag">Next.js 15 · MongoDB · Hubtel</span></span>
+      </div>
+      <div class="row">
+        <span class="idx">04</span>
+        <span class="name">E-Voting</span>
+        <span class="desc">White-label elections SaaS. Full lifecycle, cryptographic PDF vote receipts, real-time dashboards, multi-election isolation.</span>
+        <span class="meta"><span class="badge">Live</span><span class="tag">React · Node · MongoDB</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <div class="sec-label">Experience</div>
+      <h2 class="sec-title">Led teams, shipped on schedule.</h2>
+    </div>
+    <div class="exp-wrap">
+      <div class="exp">
+        <div class="job">
+          <div class="when">Aug 2025 — Jan 2026</div>
+          <div class="co">Ascend BPO Services · Remote</div>
+          <h3>Team Lead & Full Stack Developer</h3>
+          <p>Led a 3-person team building a production IVR Flow Builder and real-time analytics portal that replaced the legacy call routing system. Full C# ASP.NET Core + SQL Server backend, SignalR push, a DataGrid virtualized to 100k rows.</p>
+          <div class="stack">React 19 · ReactFlow · SignalR · C# ASP.NET Core · SQL Server</div>
+        </div>
+        <div class="job">
+          <div class="when">Nov 2023 — Nov 2024</div>
+          <div class="co">Global Expeditions SMC · London, Remote</div>
+          <h3>Team Lead & Full Stack Developer</h3>
+          <p>Led full-stack development of a B2B SaaS travel platform. Architected four role-based panels from SuperAdmin to AgentPanel with isolated access controls and scalable REST APIs.</p>
+          <div class="stack">Vue.js · Node.js · Express · MongoDB · SASS</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer><span>Lahore, Pakistan</span><span>hassaniftikhardev@gmail.com</span></footer>
+</body>
+</html>

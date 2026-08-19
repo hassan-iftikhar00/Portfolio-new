@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Comp C — Hard monochrome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&display=swap" rel="stylesheet" />
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#000; --fg:#fff; --mut:#8a8a8a; --faint:#4d4d4d;
+    --hot:#4B2BFF; /* the one loud hue — used exactly 3 times */
+    --line:rgba(255,255,255,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--fg);font-family:"General Sans",system-ui,sans-serif;font-size:17px;line-height:1.5;overflow-x:hidden}
+  ::selection{background:var(--hot);color:#fff}   /* USE 1 of 3 */
+  .disp{font-family:"Unbounded",sans-serif;letter-spacing:-.02em;line-height:.9}
+  .mono{font-family:"JetBrains Mono",monospace}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:100%;padding:0 clamp(16px,3vw,40px)}
+
+  header{display:flex;justify-content:space-between;align-items:center;padding:22px clamp(16px,3vw,40px);border-bottom:1px solid var(--line)}
+  .brand{font-family:"Unbounded",sans-serif;font-weight:800;font-size:16px;letter-spacing:-.01em;text-transform:uppercase}
+  nav{display:flex;gap:22px;font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+  nav a:hover{color:var(--fg)}
+
+  /* marquee strip as texture */
+  .marq{border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:10px 0}
+  .marq div{display:inline-block;animation:scroll 22s linear infinite;font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint)}
+  .marq span{margin:0 26px}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.marq div{animation:none}}
+
+  .hero{padding:clamp(48px,7vw,96px) clamp(16px,3vw,40px) clamp(40px,6vw,72px)}
+  .chip{display:inline-flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--fg);padding:6px 12px}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--hot)}  /* USE 2 of 3 */
+  h1.hero-t{font-family:"Unbounded",sans-serif;font-weight:800;font-size:clamp(3.2rem,12.5vw,13rem);letter-spacing:-.04em;line-height:.86;margin:28px 0 0;text-transform:uppercase}
+  h1.hero-t span{display:block}
+  .under{display:grid;grid-template-columns:1fr;gap:28px;margin-top:44px;padding-top:32px;border-top:2px solid var(--fg)}
+  @media(min-width:860px){.under{grid-template-columns:1.4fr .9fr;align-items:start}}
+  .pitch{font-size:clamp(18px,1.9vw,21px);color:var(--mut);max-width:44ch;line-height:1.5}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+  .btn{font-family:"JetBrains Mono",monospace;font-size:13px;text-transform:uppercase;letter-spacing:.03em;padding:14px 22px;border:1px solid var(--fg)}
+  .btn.solid{background:var(--fg);color:#000;font-weight:600}
+  .btn.solid:hover{background:var(--mut)}
+  .btn.ghost:hover{background:#111}
+
+  .sec{border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:stretch;border-bottom:1px solid var(--line)}
+  .sec-head .n{font-family:"Unbounded",sans-serif;font-weight:800;font-size:clamp(48px,9vw,120px);line-height:1;padding:clamp(14px,2vw,26px) clamp(16px,3vw,40px);border-right:1px solid var(--line);color:var(--faint)}
+  .sec-head .t{display:flex;align-items:center;padding:0 clamp(16px,3vw,40px);font-family:"JetBrains Mono",monospace;font-size:13px;text-transform:uppercase;letter-spacing:.1em}
+
+  /* brutalist work grid — edge to edge, hairline cells */
+  .grid{display:grid;grid-template-columns:1fr}
+  @media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
+  .cell{border-bottom:1px solid var(--line);padding:clamp(26px,3.4vw,48px) clamp(16px,3vw,40px);min-height:230px;display:flex;flex-direction:column;transition:background .25s}
+  @media(min-width:760px){.cell:nth-child(odd){border-right:1px solid var(--line)}}
+  .cell:hover{background:#0b0b0b}
+  .cell .top{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .cell h3{font-family:"Unbounded",sans-serif;font-weight:600;font-size:clamp(30px,4vw,52px);letter-spacing:-.02em;text-transform:uppercase;margin-top:auto;line-height:.95}
+  .cell p{color:var(--mut);font-size:14px;margin-top:14px;max-width:42ch;line-height:1.45}
+  .cell .stack{margin-top:18px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--faint);letter-spacing:.03em}
+  .live b{color:var(--fg);font-weight:500}
+
+  /* experience — big ledger rows */
+  .job{display:grid;grid-template-columns:1fr;gap:10px;border-bottom:1px solid var(--line);padding:clamp(26px,3.4vw,46px) clamp(16px,3vw,40px)}
+  @media(min-width:860px){.job{grid-template-columns:230px 1fr auto;gap:40px;align-items:baseline}}
+  .job .when{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--mut);letter-spacing:.03em}
+  .job h3{font-family:"Unbounded",sans-serif;font-weight:600;font-size:clamp(22px,2.6vw,32px);letter-spacing:-.02em;text-transform:uppercase;line-height:1}
+  .job .co{color:var(--faint);font-family:"JetBrains Mono",monospace;font-size:12px;margin-top:6px}
+  .job p{color:var(--mut);font-size:14px;margin-top:12px;max-width:60ch;line-height:1.5}
+  .job .stack{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--faint);letter-spacing:.03em;white-space:nowrap}
+  footer{padding:34px clamp(16px,3vw,40px);border-top:1px solid var(--line);font-family:"JetBrains Mono",monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">Hassan Iftikhar</div>
+    <nav><a href="#">Work</a><a href="#">Exp</a><a href="#">Contact</a><a href="#">Resume↗</a></nav>
+  </header>
+  <div class="marq"><div><span>Full Stack Developer</span>·<span>React</span>·<span>Next.js</span>·<span>Vue</span>·<span>Node</span>·<span>C# ASP.NET Core</span>·<span>Available for work</span>·<span>Lahore, Pakistan</span>·<span>Full Stack Developer</span>·<span>React</span>·<span>Next.js</span>·<span>Vue</span>·<span>Node</span>·<span>C# ASP.NET Core</span>·<span>Available for work</span>·<span>Lahore, Pakistan</span>·</div></div>
+
+  <section class="hero">
+    <span class="chip"><span class="dot"></span>Available for work</span>
+    <h1 class="hero-t"><span>Ships and</span><span>stays up.</span></h1>
+    <div class="under">
+      <p class="pitch">Full stack developer, 2+ years shipping production SaaS for international clients across travel, enterprise, and edtech. React, Vue, and Next.js frontends on Node, Express, and C# backends.</p>
+      <div>
+        <div class="cta">
+          <a class="btn solid" href="#">View the work</a>
+          <a class="btn ghost" href="#">Resume ↗</a>
+          <a class="btn ghost" href="#">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><div class="n">01</div><div class="t">Selected Work</div></div>
+    <div class="grid">
+      <div class="cell">
+        <div class="top"><span>AI · Sketch-to-Code</span><span>Archived</span></div>
+        <h3>CodeCanvas</h3>
+        <p>Hand-drawn UI wireframes into production React + Tailwind via a YOLOv11 detection and Gemini 2.5 Pro generation pipeline.</p>
+        <div class="stack">Next.js · FastAPI · Konva · Gemini</div>
+      </div>
+      <div class="cell">
+        <div class="top live"><span>Visual Feedback SaaS</span><span><b>● Live</b></span></div>
+        <h3>FeedSnap</h3>
+        <p>Marker.io competitor. Screenshot-annotated comments pinned at exact coordinates; Lemon Squeezy billing, SSRF-safe screenshots, Redis rate limiting.</p>
+        <div class="stack">Next.js 16 · Supabase · Redis</div>
+      </div>
+      <div class="cell">
+        <div class="top live"><span>Enrolment Platform</span><span><b>● Live</b></span></div>
+        <h3>Peki Portal</h3>
+        <p>Dual student/admin portals, Hubtel payments, SMS credential delivery, RBAC across 13 MongoDB models.</p>
+        <div class="stack">Next.js 15 · MongoDB · Hubtel</div>
+      </div>
+      <div class="cell">
+        <div class="top live"><span>White-label Elections</span><span><b>● Live</b></span></div>
+        <h3>E-Voting</h3>
+        <p>Full election lifecycle, cryptographic PDF vote receipts, real-time dashboards, multi-election isolation.</p>
+        <div class="stack">React · Node · MongoDB</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><div class="n">02</div><div class="t">Experience</div></div>
+    <div class="job">
+      <div class="when">Aug 2025 — Jan 2026</div>
+      <div>
+        <h3>Team Lead & Full Stack Developer</h3>
+        <div class="co">Ascend BPO Services · Remote</div>
+        <p>Led a 3-person team building a production IVR Flow Builder and analytics portal replacing the legacy call router. C# ASP.NET Core + SQL Server, SignalR push, DataGrid virtualized to 100k rows.</p>
+      </div>
+      <div class="stack">C# · SignalR · React 19</div>
+    </div>
+    <div class="job">
+      <div class="when">Nov 2023 — Nov 2024</div>
+      <div>
+        <h3>Team Lead & Full Stack Developer</h3>
+        <div class="co">Global Expeditions SMC · London, Remote</div>
+        <p>Led full-stack development of a B2B SaaS travel platform. Four role-based panels from SuperAdmin to AgentPanel with isolated access controls and scalable REST APIs.</p>
+      </div>
+      <div class="stack">Vue · Node · MongoDB</div>
+    </div>
+  </section>
+
+  <footer><span>Lahore, Pakistan</span><span>hassaniftikhardev@gmail.com</span></footer>
+</body>
+</html>
