@@ -138,30 +138,17 @@ function BootScreen({ onComplete }: { onComplete: () => void }) {
 
 // ─── Floating tech badge ──────────────────────────────────────────────────────
 
-function FloatingBadge({
-  tech,
-  delay,
-  x,
-  y,
-}: {
-  tech: string;
-  delay: number;
-  x: string;
-  y: string;
-}) {
+function FloatingBadge({ tech, delay }: { tech: string; delay: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
       style={{
-        position: "absolute",
-        left: x,
-        top: y,
         animation: `float ${3 + (delay % 1) * 2}s ease-in-out infinite`,
         animationDelay: `${delay}s`,
       }}
-      className="px-3 py-1.5 rounded-xl bg-surface/80 backdrop-blur border border-white/[0.08] text-xs font-mono text-text-sub whitespace-nowrap hidden lg:block"
+      className="px-3 py-1.5 rounded-xl bg-surface/80 backdrop-blur border border-white/[0.08] text-xs font-mono text-text-sub whitespace-nowrap"
     >
       {tech}
     </motion.div>
@@ -274,139 +261,157 @@ function HeroContent() {
         <div className="w-[800px] h-[800px] rounded-full bg-accent-cyan/[0.04] blur-3xl" />
       </div>
 
-      {/* Floating tech badges */}
-      <FloatingBadge tech="React 18" delay={0.2} x="8%" y="25%" />
-      <FloatingBadge tech="Next.js 14" delay={0.5} x="5%" y="55%" />
-      <FloatingBadge tech="TypeScript" delay={0.8} x="10%" y="72%" />
-      <FloatingBadge tech="Node.js" delay={0.4} x="88%" y="30%" />
-      <FloatingBadge tech="MongoDB" delay={0.7} x="85%" y="55%" />
-      <FloatingBadge tech="TailwindCSS" delay={1.0} x="82%" y="70%" />
+      {/* Floating tech badges — removed from absolute overlay, now in grid columns */}
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text content */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col gap-6"
-          >
-            {/* Status pill */}
-            <motion.div variants={itemVariants}>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Open to full-time & contract roles
-              </div>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.div variants={itemVariants} className="flex flex-col gap-2">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05]">
-                <span className="text-text-primary">{owner.name}</span>
-              </h1>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-                <span className="text-gradient-cyan">{owner.title}</span>
-              </h2>
-            </motion.div>
-
-            {/* Subheading */}
-            <motion.p
-              variants={itemVariants}
-              className="text-text-sub text-lg md:text-xl leading-relaxed max-w-xl"
-            >
-              Building{" "}
-              <span className="text-text-primary font-medium">
-                multi-tenant SaaS platforms
-              </span>
-              ,{" "}
-              <span className="text-text-primary font-medium">
-                admin panel architectures
-              </span>
-              , and{" "}
-              <span className="text-text-primary font-medium">
-                performance-optimized web applications
-              </span>{" "}
-              with React, Next.js, and Node.js.
-            </motion.p>
-
-            {/* Location */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div className="flex flex-col gap-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left: Text content */}
             <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-2 text-text-sub text-sm font-mono"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col gap-6"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
+              {/* Status pill */}
+              <motion.div variants={itemVariants}>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Open to full-time & contract roles
+                </div>
+              </motion.div>
+
+              {/* Headline */}
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-col gap-2"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                />
-              </svg>
-              {owner.location}
-            </motion.div>
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05]">
+                  <span className="text-text-primary">{owner.name}</span>
+                </h1>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+                  <span className="text-gradient-cyan">{owner.title}</span>
+                </h2>
+              </motion.div>
 
-            {/* CTAs */}
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center flex-wrap gap-3 pt-2"
-            >
-              <Button variant="primary" size="lg" href="#projects">
-                View Work
+              {/* Subheading */}
+              <motion.p
+                variants={itemVariants}
+                className="text-text-sub text-lg md:text-xl leading-relaxed max-w-xl"
+              >
+                Building{" "}
+                <span className="text-text-primary font-medium">
+                  multi-tenant SaaS platforms
+                </span>
+                ,{" "}
+                <span className="text-text-primary font-medium">
+                  admin panel architectures
+                </span>
+                , and{" "}
+                <span className="text-text-primary font-medium">
+                  performance-optimized web applications
+                </span>{" "}
+                with React, Next.js, and Node.js.
+              </motion.p>
+
+              {/* Location */}
+              <motion.div
+                variants={itemVariants}
+                className="flex items-center gap-2 text-text-sub text-sm font-mono"
+              >
                 <svg
                   className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="m13.5 4.5 6 6m0 0-6 6m6-6H3"
+                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
                   />
                 </svg>
-              </Button>
-              <Button variant="secondary" size="lg" href="#contact">
-                Get In Touch
-              </Button>
+                {owner.location}
+              </motion.div>
+
+              {/* CTAs */}
+              <motion.div
+                variants={itemVariants}
+                className="flex items-center flex-wrap gap-3 pt-2"
+              >
+                <Button variant="primary" size="lg" href="#projects">
+                  View Work
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m13.5 4.5 6 6m0 0-6 6m6-6H3"
+                    />
+                  </svg>
+                </Button>
+                <Button variant="secondary" size="lg" href="#contact">
+                  Get In Touch
+                </Button>
+              </motion.div>
+
+              {/* Stats strip */}
+              <motion.div
+                variants={itemVariants}
+                className="flex items-center gap-8 pt-4 border-t border-white/[0.06]"
+              >
+                {[
+                  { value: "3+", label: "Years Experience" },
+                  { value: "10+", label: "Projects Shipped" },
+                  { value: "5+", label: "SaaS Platforms" },
+                ].map((stat) => (
+                  <div key={stat.label} className="flex flex-col gap-1">
+                    <span className="text-2xl font-bold text-gradient-cyan">
+                      {stat.value}
+                    </span>
+                    <span className="text-text-sub text-xs font-mono">
+                      {stat.label}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
             </motion.div>
 
-            {/* Stats strip */}
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-8 pt-4 border-t border-white/[0.06]"
-            >
-              {[
-                { value: "3+", label: "Years Experience" },
-                { value: "10+", label: "Projects Shipped" },
-                { value: "5+", label: "SaaS Platforms" },
-              ].map((stat) => (
-                <div key={stat.label} className="flex flex-col gap-1">
-                  <span className="text-2xl font-bold text-gradient-cyan">
-                    {stat.value}
-                  </span>
-                  <span className="text-text-sub text-xs font-mono">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Right: Terminal */}
-          <div className="flex items-center justify-center lg:justify-end">
-            <SkillsTerminal />
+            {/* Right: Terminal */}
+            <div className="flex items-center justify-center lg:justify-end">
+              <SkillsTerminal />
+            </div>
           </div>
+
+          {/* Tech badge strip — visible at lg+ (laptop default), wraps gracefully */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden lg:flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-white/[0.04]"
+          >
+            {[
+              { tech: "React 18", delay: 0.2 },
+              { tech: "Next.js 14", delay: 0.4 },
+              { tech: "TypeScript", delay: 0.6 },
+              { tech: "Node.js", delay: 0.8 },
+              { tech: "MongoDB", delay: 1.0 },
+              { tech: "TailwindCSS", delay: 1.2 },
+            ].map(({ tech, delay }) => (
+              <FloatingBadge key={tech} tech={tech} delay={delay} />
+            ))}
+          </motion.div>
         </div>
       </div>
 
@@ -415,13 +420,13 @@ function HeroContent() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute  bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="text-text-sub text-xs font-mono">scroll down</span>
+        {/* <span className="text-text-sub text-xs font-mono">scroll down</span> */}
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center pt-1.5"
+          className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center pt-1.5 "
         >
           <div className="w-1 h-1.5 rounded-full bg-accent-cyan" />
         </motion.div>

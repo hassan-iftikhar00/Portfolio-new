@@ -29,7 +29,14 @@ function StarRating() {
 
 // ─── Testimonial Card ────────────────────────────────────────────────────────
 
-const cardColors = ["#C8CDD6", "#7A8194", "#E8EAEF", "#8B929E", "#A3AAB8", "#B4BAC6"];
+const cardColors = [
+  "#C8CDD6",
+  "#7A8194",
+  "#E8EAEF",
+  "#8B929E",
+  "#A3AAB8",
+  "#B4BAC6",
+];
 
 function TestimonialCard({
   testimonial,
@@ -117,7 +124,7 @@ export default function Testimonials() {
         ease: "none",
         scrollTrigger: {
           trigger: section,
-          start: "top top",
+          start: "center center",
           end: () => `+=${getScrollDistance()}`,
           pin: true,
           scrub: 1,
