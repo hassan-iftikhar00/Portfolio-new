@@ -7,21 +7,11 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
+  pageExtensions: ["ts", "tsx", "js", "jsx"],
   images: {
     // Add specific hostnames here as needed, e.g.:
     // { protocol: "https", hostname: "res.cloudinary.com" }
     remotePatterns: [],
-  },
-  experimental: {
-    // Barrel-file import optimisation.
-    // Ensures Next.js tree-shakes these packages to only the exports used,
-    // instead of bundling the entire barrel index into every chunk.
-    optimizePackageImports: [
-      "lucide-react",
-      "framer-motion",
-      "@react-three/drei",
-    ],
   },
 };
 

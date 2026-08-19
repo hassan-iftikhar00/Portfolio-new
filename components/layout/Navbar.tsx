@@ -1,172 +1,118 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import Link from "next/link";
 import { owner } from "@/lib/data";
-import Image from "next/image";
 
-const navLinks = [
-  { label: "Systems", href: "#highlights" },
-  { label: "Work", href: "#projects" },
-  { label: "Timeline", href: "#experience" },
-  { label: "Stack", href: "#skills" },
-  { label: "Contact", href: "#contact" },
+// Small client island: only the mobile menu toggle needs JS.
+// All links are real anchors, so navigation works with JS disabled.
+
+const links = [
+  { href: "/#work", label: "Work" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/#skills", label: "Skills" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.4 },
-    );
-
-    document
-      .querySelectorAll("section[id]")
-      .forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  const [open, setOpen] = useState(false);
 
   return (
-    <>
-      <motion.header
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          scrolled
-            ? "bg-background/80 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
-            : "bg-transparent",
-        )}
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur">
+      <nav
+        aria-label="Primary"
+        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:px-8"
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo with Image */}
-            <a href="#" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center">
-                <Image
-                  src="/Copilot_20260310_201847.png"
-                  alt="Hassan Iftikhar logo"
-                  width={32}
-                  height={32}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <span className="font-semibold text-text-primary text-sm hidden sm:block">
-                Hassan Iftikhar
-              </span>
-            </a>
+        <Link
+          href="/"
+          className="font-mono text-sm font-semibold tracking-tight text-text-primary"
+        >
+          hassan<span className="text-accent">.dev</span>
+        </Link>
 
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    activeSection === link.href.replace("#", "")
-                      ? "text-accent-cyan bg-accent-cyan/10"
-                      : "text-text-sub hover:text-text-primary hover:bg-white/5",
-                  )}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
+        {/* Desktop links */}
+        <div className="hidden items-center gap-8 md:flex">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="text-sm text-text-sub transition-colors duration-base hover:text-text-primary"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </div>
 
-            {/* CTA */}
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2 text-xs text-text-sub font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Available for work
-              </div>
-              <a
-                href="#contact"
-                className="px-4 py-2 rounded-xl bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan text-sm font-semibold hover:bg-accent-cyan hover:text-background transition-all duration-200"
+        {/* Recruiter fast-paths: resume + GitHub always one click from the header */}
+        <div className="hidden items-center gap-3 md:flex">
+          <a
+            href={owner.github}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="text-sm text-text-sub transition-colors duration-base hover:text-text-primary"
+          >
+            GitHub
+          </a>
+          <a
+            href={owner.resumeUrl}
+            className="rounded-lg bg-accent px-3.5 py-1.5 text-sm font-semibold text-accent-ink transition-opacity duration-base hover:opacity-90"
+          >
+            Resume
+          </a>
+        </div>
+
+        {/* Mobile toggle */}
+        <button
+          type="button"
+          aria-label="Toggle menu"
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-primary md:hidden"
+        >
+          <span className="sr-only">Menu</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            {open ? (
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            ) : (
+              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            )}
+          </svg>
+        </button>
+      </nav>
+
+      {/* Mobile sheet */}
+      {open ? (
+        <div className="border-t border-border bg-surface md:hidden">
+          <div className="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-4">
+            {links.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-2 py-2.5 text-sm text-text-sub hover:bg-card hover:text-text-primary"
               >
-                Get in touch
+                {l.label}
+              </Link>
+            ))}
+            <div className="mt-2 flex gap-3">
+              <a
+                href={owner.github}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm text-text-primary"
+              >
+                GitHub
+              </a>
+              <a
+                href={owner.resumeUrl}
+                className="flex-1 rounded-lg bg-accent px-3 py-2 text-center text-sm font-semibold text-accent-ink"
+              >
+                Resume
               </a>
             </div>
-
-            {/* Mobile toggle */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden w-9 h-9 flex flex-col items-center justify-center gap-1.5 group"
-              aria-label="Toggle menu"
-            >
-              <span
-                className={cn(
-                  "w-5 h-0.5 bg-text-sub transition-all duration-200 group-hover:bg-text-primary",
-                  mobileOpen && "rotate-45 translate-y-2",
-                )}
-              />
-              <span
-                className={cn(
-                  "w-5 h-0.5 bg-text-sub transition-all duration-200 group-hover:bg-text-primary",
-                  mobileOpen && "opacity-0",
-                )}
-              />
-              <span
-                className={cn(
-                  "w-5 h-0.5 bg-text-sub transition-all duration-200 group-hover:bg-text-primary",
-                  mobileOpen && "-rotate-45 -translate-y-2",
-                )}
-              />
-            </button>
           </div>
         </div>
-      </motion.header>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-b border-white/[0.06] md:hidden overflow-hidden"
-          >
-            <nav className="flex flex-col px-6 py-4 gap-1">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="px-4 py-3 rounded-xl text-sm font-medium text-text-sub hover:text-text-primary hover:bg-white/5 transition-colors duration-200"
-                >
-                  {link.label}
-                </a>
-              ))}
-              <a
-                href="#contact"
-                onClick={() => setMobileOpen(false)}
-                className="mt-2 px-4 py-3 rounded-xl bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan text-sm font-semibold text-center"
-              >
-                Get in touch
-              </a>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      ) : null}
+    </header>
   );
 }

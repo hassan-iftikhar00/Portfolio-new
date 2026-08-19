@@ -29,9 +29,28 @@ pnpm-debug.log*
 # local env files
 .env*.local
 .env
+.env.local.example
 
 # vercel
 .vercel
+
+# local tooling / agent scratch
+/.claude
+/.playwright-mcp
+
+# source screenshots (only selected posters in public/images/projects are used)
+/public/perProjectAssets
+
+# scratch screenshots from measurement passes
+p6-*.png
+p8-*.png
+styleguide-*.png
+
+# internal docs / source material (kept local, not shipped)
+resume.md
+resume-archive.md
+PRODUCT.md
+REBUILD-PLAN.md
 
 # typescript
 *.tsbuildinfo
