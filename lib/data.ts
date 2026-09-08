@@ -461,6 +461,17 @@ export const projectIndex: ProjectIndexEntry[] = [
     status: "Delivered",
     country: { code: "tr", name: "Turkey" },
   },
+  {
+    name: "Asian Scientific Traders",
+    summary:
+      "Built a solo full-stack catalog and inquiry site for a Lahore scientific-instrument trader: server-rendered product/category pages, a WhatsApp-driven inquiry flow, local-business SEO with JSON-LD, and a phone-friendly admin panel with custom JWT auth and a sharp/WebP image pipeline.",
+    stack: ["Next.js 15", "React 19", "TypeScript", "Prisma", "Supabase Postgres", "Tailwind"],
+    year: "2026",
+    role: "Solo full-stack",
+    status: "Live",
+    country: { code: "pk", name: "Pakistan" },
+    link: "https://asianscientifictraders.com",
+  },
 ];
 
 // ─── Reach (countries reached through client work) ────────────────────────────
