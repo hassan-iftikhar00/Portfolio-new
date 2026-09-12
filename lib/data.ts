@@ -450,16 +450,7 @@ export const projectIndex: ProjectIndexEntry[] = [
     role: "Frontend + integrations (existing platform)",
     status: "Live",
     country: { code: "gb", name: "United Kingdom" },
-  },
-  {
-    name: "Multilingual Bank Website",
-    summary:
-      "Integrated the backend and a secure admin panel for a banking site: authentication, blog management, Cloudinary image hosting, and language-specific content filtering across English and Turkish.",
-    stack: ["Next.js", "Node.js", "MongoDB", "Cloudinary"],
-    year: "2024",
-    role: "Backend + admin panel",
-    status: "Delivered",
-    country: { code: "tr", name: "Turkey" },
+    link: "https://liveautos.co.uk/",
   },
   {
     name: "Asian Scientific Traders",
@@ -471,6 +462,16 @@ export const projectIndex: ProjectIndexEntry[] = [
     status: "Live",
     country: { code: "pk", name: "Pakistan" },
     link: "https://asianscientifictraders.com",
+  },
+  {
+    name: "Multilingual Bank Website",
+    summary:
+      "Integrated the backend and a secure admin panel for a banking site: authentication, blog management, Cloudinary image hosting, and language-specific content filtering across English and Turkish.",
+    stack: ["Next.js", "Node.js", "MongoDB", "Cloudinary"],
+    year: "2024",
+    role: "Backend + admin panel",
+    status: "Delivered",
+    country: { code: "tr", name: "Turkey" },
   },
 ];
 
